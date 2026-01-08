@@ -191,7 +191,12 @@ export default function ProfilePage() {
         >
           森
         </button>
-        <button className="text-zinc-400 hover:text-sage transition-colors">湖</button>
+        <button 
+          onClick={() => router.push("/lake")}
+          className="text-zinc-400 hover:text-sage transition-colors"
+        >
+          湖
+        </button>
         <div className="w-12 h-12 bg-sage/10 rounded-full flex items-center justify-center text-sage cursor-not-allowed">
           <span className="text-3xl mb-1">+</span>
         </div>

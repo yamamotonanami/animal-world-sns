@@ -7,17 +7,16 @@ import { Heart, Sparkles, Coffee, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ANIMAL_DATA, AnimalType } from "@/lib/constants";
 
-export default function Home() {
+export default function LakePage() {
   const router = useRouter();
-  // 森の投稿のみを初期表示
-  const [posts, setPosts] = useState(MOCK_POSTS.filter(p => p.spaceType === "forest"));
+  // 湖の投稿のみを初期表示
+  const [posts, setPosts] = useState(MOCK_POSTS.filter(p => p.spaceType === "lake"));
   const [user, setUser] = useState<{ name: string; animal: string; title: string } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isTranslating, setIsTranslating] = useState(false);
   const [translatedResult, setTranslatedResult] = useState("");
 
-  // ユーザー情報の読み込みと遷移チェック
   useEffect(() => {
     const savedUser = localStorage.getItem("animal_sns_user");
     if (!savedUser) {
@@ -27,23 +26,18 @@ export default function Home() {
     }
   }, [router]);
 
-  // お試し翻訳ロジック
   const handleTranslate = () => {
     if (!inputValue.trim()) return;
-    
     setIsTranslating(true);
-    
-    // 1.5秒待ってから翻訳結果を出す（AIの待ち時間を演出）
     setTimeout(() => {
-      const animalName = ANIMAL_DATA[user.animal as AnimalType]?.name || "動物";
-      const animalPhrases = [
-        `${animalName}らしく、日向ぼっこがしたい気分。しっぽが少し揺れた。`,
-        `遠くの方で不思議な音がした。${animalName}の耳を澄ませて、じっとしている。`,
-        `${animalName}の好きそうな木の実を見つけたような、そんな嬉しい気持ち。`,
-        `ふわふわの毛並みを整えて、${animalName}としての新しい冒険に出かける準備は万端。`
+      const animalName = ANIMAL_DATA[user?.animal as AnimalType]?.name || "動物";
+      const lakePhrases = [
+        `${animalName}は、静かな湖面に映る自分をじっと見つめている。`,
+        `ひんやりとした湖の水が、${animalName}の足を優しく包み込んだ。`,
+        `遠くの方で魚が跳ねた。${animalName}は少し驚いて、耳を動かした。`,
+        `穏やかな波紋が広がっていく。${animalName}の心も、少しずつ凪いでいく。`
       ];
-      const randomPhrase = animalPhrases[Math.floor(Math.random() * animalPhrases.length)];
-      
+      const randomPhrase = lakePhrases[Math.floor(Math.random() * lakePhrases.length)];
       setTranslatedResult(`「${randomPhrase}」`);
       setIsTranslating(false);
     }, 1500);
@@ -51,7 +45,6 @@ export default function Home() {
 
   const handlePost = () => {
     if (!user) return;
-
     const newPost = {
       id: Date.now().toString(),
       userId: "u-me",
@@ -60,28 +53,36 @@ export default function Home() {
       animalType: user.animal,
       translatedContent: translatedResult.replace(/[「」]/g, ""),
       originalContent: inputValue,
-      spaceType: "forest",
+      spaceType: "lake", // 湖への投稿
       createdAt: new Date().toISOString(),
       reactions: { tail: false, groom: false, stretch: false },
     };
-    
     setPosts([newPost, ...posts]);
     setIsModalOpen(false);
     setInputValue("");
     setTranslatedResult("");
   };
 
-  // ユーザー情報読み込み中は何も表示しない（またはローディング）
+  const toggleReaction = (postId: string, type: "tail" | "groom" | "stretch") => {
+    setPosts(posts.map(post => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          reactions: { ...post.reactions, [type]: !post.reactions[type] }
+        };
+      }
+      return post;
+    }));
+  };
+
   if (!user) return <div className="min-h-screen bg-white" />;
 
-  // ... (toggleReaction 関数など)
-
   return (
-    <div className="pb-20 min-h-screen bg-forest-pattern">
+    <div className="pb-20 min-h-screen bg-lake-pattern">
       {/* ヘッダー */}
       <header className="sticky top-0 z-10 bg-white/60 backdrop-blur-md border-b border-sage/10 px-6 py-4">
-        <h1 className="text-xl font-bold text-sage">森のタイムライン</h1>
-        <p className="text-xs text-zinc-400">穏やかな時間が流れています</p>
+        <h1 className="text-xl font-bold text-sage">湖のタイムライン</h1>
+        <p className="text-xs text-zinc-400">水面に映る、穏やかな時間</p>
       </header>
 
       {/* 投稿一覧 */}
@@ -89,9 +90,8 @@ export default function Home() {
         {posts.map((post) => (
           <div
             key={post.id}
-            className="bg-white rounded-3xl p-6 shadow-sm border border-sage/5 transition-all hover:shadow-md"
+            className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-sm border border-sage/5 transition-all hover:shadow-md"
           >
-            {/* ユーザー情報 */}
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center text-xl">
                 {ANIMAL_DATA[post.animalType as AnimalType]?.emoji || "🐾"}
@@ -105,13 +105,9 @@ export default function Home() {
                 <h3 className="font-bold text-zinc-800">{post.nickname}</h3>
               </div>
             </div>
-
-            {/* 投稿内容 */}
             <p className="text-zinc-700 leading-relaxed mb-6">
               {post.translatedContent}
             </p>
-
-            {/* リアクション（数値なし） */}
             <div className="flex gap-6 items-center border-t border-sage/5 pt-4">
               <button 
                 onClick={() => toggleReaction(post.id, "tail")}
@@ -141,13 +137,13 @@ export default function Home() {
 
       {/* 下部ナビゲーション */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-[380px] bg-white/90 backdrop-blur-xl border border-sage/20 shadow-2xl rounded-full px-8 py-3 flex items-center justify-between z-20">
-        <button className="text-sage font-bold">森</button>
         <button 
-          onClick={() => router.push("/lake")}
+          onClick={() => router.push("/")}
           className="text-zinc-400 hover:text-sage transition-colors"
         >
-          湖
+          森
         </button>
+        <button className="text-sage font-bold">湖</button>
         <button 
           onClick={() => setIsModalOpen(true)}
           className="w-12 h-12 bg-sage rounded-full flex items-center justify-center text-white shadow-lg shadow-sage/40 hover:scale-110 active:scale-95 transition-all cursor-pointer -translate-y-2"
@@ -184,7 +180,7 @@ export default function Home() {
               className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white rounded-t-[40px] p-8 pb-12 z-40 shadow-2xl border-t border-sage/10"
             >
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-bold text-zinc-800">今のきもちを、動物の言葉に</h2>
+                <h2 className="text-lg font-bold text-zinc-800">湖のほとりで、今のきもちを</h2>
                 <button 
                   onClick={() => setIsModalOpen(false)}
                   className="p-2 hover:bg-zinc-100 rounded-full transition-colors"
@@ -198,7 +194,7 @@ export default function Home() {
                   <textarea
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="ここに人間の言葉を入力してみてね..."
+                    placeholder="湖に投げかけるように、人間の言葉を入力してみてね..."
                     className="w-full h-32 p-4 rounded-2xl bg-zinc-50 border-none focus:ring-2 focus:ring-sage/20 resize-none text-zinc-700"
                   />
                   <button
@@ -210,7 +206,7 @@ export default function Home() {
                         : "bg-sage text-white shadow-lg shadow-sage/30 hover:scale-[1.02] active:scale-[0.98]"
                     }`}
                   >
-                    {isTranslating ? "翻訳の魔法をかけています..." : "動物の言葉に翻訳する"}
+                    {isTranslating ? "波紋が広がっています..." : "動物の言葉に翻訳する"}
                   </button>
                 </div>
               ) : (
@@ -235,7 +231,7 @@ export default function Home() {
                       onClick={handlePost}
                       className="flex-[2] h-14 rounded-full font-bold text-white bg-sage shadow-lg shadow-sage/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
                     >
-                      このまま森に流す
+                      このまま湖に流す
                     </button>
                   </div>
                 </div>
