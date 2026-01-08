@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Coffee, Cloud, Moon, Sun, Heart } from "lucide-react";
+import { ANIMAL_DATA } from "@/lib/constants";
 
 const QUESTIONS = [
   {
@@ -35,28 +36,7 @@ const QUESTIONS = [
   },
 ];
 
-const ANIMAL_RESULTS: Record<string, { name: string, emoji: string, description: string }> = {
-  dog: {
-    name: "イヌ",
-    emoji: "🐕",
-    description: "あなたは、素直で温かい心の持ち主。誰かの喜びを自分のことのように喜べる、森のムードメーカーです。",
-  },
-  cat: {
-    name: "ネコ",
-    emoji: "🐈",
-    description: "あなたは、自分を大切にできる自由な魂の持ち主。静かな時間を愛し、独自の視点で世界を眺めています。",
-  },
-  rabbit: {
-    name: "うさぎ",
-    emoji: "🐇",
-    description: "あなたは、繊細で優しい感性の持ち主。小さな変化に気づき、周りを和ませる不思議な魅力があります。",
-  },
-  beaver: {
-    name: "ビーバー",
-    emoji: "🦫",
-    description: "あなたは、コツコツと積み上げる努力家。自分の居心地の良い場所を作るのが得意な、頼れる存在です。",
-  },
-};
+const ANIMAL_RESULTS = ANIMAL_DATA;
 
 export default function DiagnosisPage() {
   const router = useRouter();
@@ -117,6 +97,14 @@ export default function DiagnosisPage() {
   };
 
   const goToForest = () => {
+    // ユーザー情報を保存
+    if (result && userName) {
+      localStorage.setItem("animal_sns_user", JSON.stringify({
+        name: userName,
+        animal: result,
+        title: selectedTitle
+      }));
+    }
     router.push("/");
   };
 

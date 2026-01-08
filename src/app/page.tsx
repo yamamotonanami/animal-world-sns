@@ -1,16 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { MOCK_POSTS } from "@/lib/mock-data";
 import { Heart, Sparkles, Coffee, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ANIMAL_DATA, AnimalType } from "@/lib/constants";
 
 export default function Home() {
+  const router = useRouter();
   const [posts, setPosts] = useState(MOCK_POSTS);
+  const [user, setUser] = useState<{ name: string; animal: string; title: string } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isTranslating, setIsTranslating] = useState(false);
   const [translatedResult, setTranslatedResult] = useState("");
+
+  // ユーザー情報の読み込みと遷移チェック
+  useEffect(() => {
+    const savedUser = localStorage.getItem("animal_sns_user");
+    if (!savedUser) {
+      router.push("/diagnosis");
+    } else {
+      setUser(JSON.parse(savedUser));
+    }
+  }, [router]);
 
   // お試し翻訳ロジック
   const handleTranslate = () => {
@@ -20,11 +34,12 @@ export default function Home() {
     
     // 1.5秒待ってから翻訳結果を出す（AIの待ち時間を演出）
     setTimeout(() => {
+      const animalName = ANIMAL_DATA[user.animal as AnimalType]?.name || "動物";
       const animalPhrases = [
-        "なんだか今日は日向ぼっこがしたい気分。しっぽが少し揺れた。",
-        "遠くの方で不思議な音がした。耳を澄ませて、じっとしている。",
-        "美味しい木の実を見つけたような、そんな嬉しい気持ちになった。",
-        "ふわふわの毛並みを整えて、新しい冒険に出かける準備は万端。"
+        `${animalName}らしく、日向ぼっこがしたい気分。しっぽが少し揺れた。`,
+        `遠くの方で不思議な音がした。${animalName}の耳を澄ませて、じっとしている。`,
+        `${animalName}の好きそうな木の実を見つけたような、そんな嬉しい気持ち。`,
+        `ふわふわの毛並みを整えて、${animalName}としての新しい冒険に出かける準備は万端。`
       ];
       const randomPhrase = animalPhrases[Math.floor(Math.random() * animalPhrases.length)];
       
@@ -34,12 +49,14 @@ export default function Home() {
   };
 
   const handlePost = () => {
+    if (!user) return;
+
     const newPost = {
       id: Date.now().toString(),
       userId: "u-me",
-      nickname: "あなた",
-      title: "ふわふわの新参者",
-      animalType: "shiba",
+      nickname: user.name,
+      title: user.title,
+      animalType: user.animal,
       translatedContent: translatedResult.replace(/[「」]/g, ""),
       originalContent: inputValue,
       spaceType: "forest",
@@ -52,6 +69,9 @@ export default function Home() {
     setInputValue("");
     setTranslatedResult("");
   };
+
+  // ユーザー情報読み込み中は何も表示しない（またはローディング）
+  if (!user) return <div className="min-h-screen bg-white" />;
 
   // リアクションの切り替え
   const toggleReaction = (postId: string, type: "tail" | "groom" | "stretch") => {
@@ -87,7 +107,7 @@ export default function Home() {
             {/* ユーザー情報 */}
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center text-xl">
-                {post.animalType === "shiba" ? "🐕" : "🐈"}
+                {ANIMAL_DATA[post.animalType as AnimalType]?.emoji || "🐾"}
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -143,7 +163,12 @@ export default function Home() {
           <span className="text-3xl mb-1">+</span>
         </button>
         <button className="text-zinc-400 hover:text-sage transition-colors">通知</button>
-        <button className="text-zinc-400 hover:text-sage transition-colors">自分</button>
+        <button 
+          onClick={() => router.push("/profile")}
+          className="text-zinc-400 hover:text-sage transition-colors"
+        >
+          自分
+        </button>
       </div>
 
       {/* 投稿モーダル */}

@@ -24,7 +24,7 @@ export const MOCK_POSTS = [
     userId: "u1",
     nickname: "ぽち",
     title: "はじめての足跡",
-    animalType: "shiba",
+    animalType: "dog",
     translatedContent: "今日は群れの集まりが長かった。日陰で少し休みたくなった。",
     originalContent: "今日は会議が多くて疲れました",
     spaceType: "forest",
