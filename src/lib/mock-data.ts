@@ -29,7 +29,11 @@ export const MOCK_POSTS = [
     originalContent: "今日は会議が多くて疲れました",
     spaceType: "forest",
     createdAt: new Date().toISOString(),
-    reactions: { tail: true, groom: false, stretch: true },
+    reactions: { 
+      tail: { count: 12, active: true }, 
+      groom: { count: 5, active: false }, 
+      stretch: { count: 8, active: true } 
+    },
   },
   {
     id: "2",
@@ -41,7 +45,11 @@ export const MOCK_POSTS = [
     originalContent: "ベランダに鳥が来てた。ずっと見てた。",
     spaceType: "forest",
     createdAt: new Date().toISOString(),
-    reactions: { tail: false, groom: true, stretch: false },
+    reactions: { 
+      tail: { count: 3, active: false }, 
+      groom: { count: 15, active: true }, 
+      stretch: { count: 2, active: false } 
+    },
   },
   {
     id: "3",
@@ -53,7 +61,11 @@ export const MOCK_POSTS = [
     originalContent: "湖に来ました。綺麗で落ち着きます。",
     spaceType: "lake",
     createdAt: new Date().toISOString(),
-    reactions: { tail: false, groom: false, stretch: true },
+    reactions: { 
+      tail: { count: 0, active: false }, 
+      groom: { count: 4, active: false }, 
+      stretch: { count: 21, active: true } 
+    },
   },
   {
     id: "4",
@@ -65,7 +77,17 @@ export const MOCK_POSTS = [
     originalContent: "仕事頑張りました。疲れましたが達成感あります。",
     spaceType: "lake",
     createdAt: new Date().toISOString(),
-    reactions: { tail: true, groom: false, stretch: false },
+    reactions: { 
+      tail: { count: 18, active: true }, 
+      groom: { count: 2, active: false }, 
+      stretch: { count: 1, active: false } 
+    },
   },
 ];
 
+export const MOCK_USERS = [
+  { id: "u1", name: "ぽち", animal: "dog", title: "はじめての足跡" },
+  { id: "u2", name: "たま", animal: "cat", title: "窓辺の警備隊長" },
+  { id: "u3", name: "みるく", animal: "rabbit", title: "震えるしっぽの冒険家" },
+  { id: "u4", name: "ごん", animal: "beaver", title: "日向ぼっこの達人" },
+];

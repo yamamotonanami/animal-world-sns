@@ -54,7 +54,7 @@ export default function Home() {
 
     const newPost = {
       id: Date.now().toString(),
-      userId: "u-me",
+      userId: "u-me", // 自分のID
       nickname: user.name,
       title: user.title,
       animalType: user.animal,
@@ -62,7 +62,11 @@ export default function Home() {
       originalContent: inputValue,
       spaceType: "forest",
       createdAt: new Date().toISOString(),
-      reactions: { tail: false, groom: false, stretch: false },
+      reactions: { 
+        tail: { count: 0, active: false }, 
+        groom: { count: 0, active: false }, 
+        stretch: { count: 0, active: false } 
+      },
     };
     
     setPosts([newPost, ...posts]);
@@ -74,7 +78,26 @@ export default function Home() {
   // ユーザー情報読み込み中は何も表示しない（またはローディング）
   if (!user) return <div className="min-h-screen bg-white" />;
 
-  // ... (toggleReaction 関数など)
+  // リアクションの切り替え
+  const toggleReaction = (postId: string, type: "tail" | "groom" | "stretch") => {
+    setPosts(posts.map(post => {
+      if (post.id === postId) {
+        const currentReaction = post.reactions[type as keyof typeof post.reactions];
+        const newActive = !currentReaction.active;
+        return {
+          ...post,
+          reactions: {
+            ...post.reactions,
+            [type]: {
+              count: newActive ? currentReaction.count + 1 : Math.max(0, currentReaction.count - 1),
+              active: newActive
+            }
+          }
+        };
+      }
+      return post;
+    }));
+  };
 
   return (
     <div className="pb-20 min-h-screen bg-forest-pattern">
@@ -93,16 +116,22 @@ export default function Home() {
           >
             {/* ユーザー情報 */}
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center text-xl">
+              <button 
+                onClick={() => router.push(`/profile/${post.userId}`)}
+                className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center text-xl hover:scale-110 active:scale-95 transition-all cursor-pointer"
+              >
                 {ANIMAL_DATA[post.animalType as AnimalType]?.emoji || "🐾"}
-              </div>
-              <div>
+              </button>
+              <div 
+                onClick={() => router.push(`/profile/${post.userId}`)}
+                className="cursor-pointer group"
+              >
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] bg-sage/10 text-sage px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] bg-sage/10 text-sage px-2 py-0.5 rounded-full group-hover:bg-sage/20 transition-all">
                     {post.title}
                   </span>
                 </div>
-                <h3 className="font-bold text-zinc-800">{post.nickname}</h3>
+                <h3 className="font-bold text-zinc-800 group-hover:text-sage transition-all">{post.nickname}</h3>
               </div>
             </div>
 
@@ -111,25 +140,25 @@ export default function Home() {
               {post.translatedContent}
             </p>
 
-            {/* リアクション（数値なし） */}
+            {/* リアクション（数値は自分の投稿のみ） */}
             <div className="flex gap-6 items-center border-t border-sage/5 pt-4">
               <button 
                 onClick={() => toggleReaction(post.id, "tail")}
-                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.tail ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
+                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.tail.active ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
               >
-                <Heart size={18} fill={post.reactions.tail ? "currentColor" : "none"} />
+                <Heart size={18} fill={post.reactions.tail.active ? "currentColor" : "none"} />
                 <span className="text-[10px] font-medium uppercase tracking-wider">しっぽ</span>
               </button>
               <button 
                 onClick={() => toggleReaction(post.id, "groom")}
-                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.groom ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
+                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.groom.active ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
               >
                 <Sparkles size={18} />
                 <span className="text-[10px] font-medium uppercase tracking-wider">毛づくろい</span>
               </button>
               <button 
                 onClick={() => toggleReaction(post.id, "stretch")}
-                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.stretch ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
+                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.stretch.active ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
               >
                 <Coffee size={18} />
                 <span className="text-[10px] font-medium uppercase tracking-wider">のび</span>
@@ -154,7 +183,13 @@ export default function Home() {
         >
           <span className="text-3xl mb-1">+</span>
         </button>
-        <button className="text-zinc-400 hover:text-sage transition-colors">通知</button>
+        <button 
+          onClick={() => router.push("/notifications")}
+          className="text-zinc-400 hover:text-sage transition-colors relative"
+        >
+          <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-400 rounded-full border border-white" />
+          通知
+        </button>
         <button 
           onClick={() => router.push("/profile")}
           className="text-zinc-400 hover:text-sage transition-colors"

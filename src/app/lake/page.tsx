@@ -53,9 +53,13 @@ export default function LakePage() {
       animalType: user.animal,
       translatedContent: translatedResult.replace(/[「」]/g, ""),
       originalContent: inputValue,
-      spaceType: "lake", // 湖への投稿
+      spaceType: "lake",
       createdAt: new Date().toISOString(),
-      reactions: { tail: false, groom: false, stretch: false },
+      reactions: { 
+        tail: { count: 0, active: false }, 
+        groom: { count: 0, active: false }, 
+        stretch: { count: 0, active: false } 
+      },
     };
     setPosts([newPost, ...posts]);
     setIsModalOpen(false);
@@ -66,9 +70,17 @@ export default function LakePage() {
   const toggleReaction = (postId: string, type: "tail" | "groom" | "stretch") => {
     setPosts(posts.map(post => {
       if (post.id === postId) {
+        const currentReaction = post.reactions[type as keyof typeof post.reactions];
+        const newActive = !currentReaction.active;
         return {
           ...post,
-          reactions: { ...post.reactions, [type]: !post.reactions[type] }
+          reactions: {
+            ...post.reactions,
+            [type]: {
+              count: newActive ? currentReaction.count + 1 : Math.max(0, currentReaction.count - 1),
+              active: newActive
+            }
+          }
         };
       }
       return post;
@@ -93,39 +105,46 @@ export default function LakePage() {
             className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-sm border border-sage/5 transition-all hover:shadow-md"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center text-xl">
+              <button 
+                onClick={() => router.push(`/profile/${post.userId}`)}
+                className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center text-xl hover:scale-110 active:scale-95 transition-all cursor-pointer"
+              >
                 {ANIMAL_DATA[post.animalType as AnimalType]?.emoji || "🐾"}
-              </div>
-              <div>
+              </button>
+              <div 
+                onClick={() => router.push(`/profile/${post.userId}`)}
+                className="cursor-pointer group"
+              >
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] bg-sage/10 text-sage px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] bg-sage/10 text-sage px-2 py-0.5 rounded-full group-hover:bg-sage/20 transition-all">
                     {post.title}
                   </span>
                 </div>
-                <h3 className="font-bold text-zinc-800">{post.nickname}</h3>
+                <h3 className="font-bold text-zinc-800 group-hover:text-sage transition-all">{post.nickname}</h3>
               </div>
             </div>
             <p className="text-zinc-700 leading-relaxed mb-6">
               {post.translatedContent}
             </p>
+            {/* リアクション（数値なし） */}
             <div className="flex gap-6 items-center border-t border-sage/5 pt-4">
               <button 
                 onClick={() => toggleReaction(post.id, "tail")}
-                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.tail ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
+                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.tail.active ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
               >
-                <Heart size={18} fill={post.reactions.tail ? "currentColor" : "none"} />
+                <Heart size={18} fill={post.reactions.tail.active ? "currentColor" : "none"} />
                 <span className="text-[10px] font-medium uppercase tracking-wider">しっぽ</span>
               </button>
               <button 
                 onClick={() => toggleReaction(post.id, "groom")}
-                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.groom ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
+                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.groom.active ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
               >
                 <Sparkles size={18} />
                 <span className="text-[10px] font-medium uppercase tracking-wider">毛づくろい</span>
               </button>
               <button 
                 onClick={() => toggleReaction(post.id, "stretch")}
-                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.stretch ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
+                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.stretch.active ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
               >
                 <Coffee size={18} />
                 <span className="text-[10px] font-medium uppercase tracking-wider">のび</span>
@@ -150,7 +169,13 @@ export default function LakePage() {
         >
           <span className="text-3xl mb-1">+</span>
         </button>
-        <button className="text-zinc-400 hover:text-sage transition-colors">通知</button>
+        <button 
+          onClick={() => router.push("/notifications")}
+          className="text-zinc-400 hover:text-sage transition-colors relative"
+        >
+          <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-400 rounded-full border border-white" />
+          通知
+        </button>
         <button 
           onClick={() => router.push("/profile")}
           className="text-zinc-400 hover:text-sage transition-colors"
