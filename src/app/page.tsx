@@ -3,19 +3,22 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { MOCK_POSTS } from "@/lib/mock-data";
-import { Heart, Sparkles, Coffee, X } from "lucide-react";
+import { Heart, Sparkles, Coffee, X, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ANIMAL_DATA, AnimalType } from "@/lib/constants";
+import { getNewUnlockedTitles, UserData } from "@/lib/titles";
 
 export default function Home() {
   const router = useRouter();
   // 森の投稿のみを初期表示
   const [posts, setPosts] = useState(MOCK_POSTS.filter(p => p.spaceType === "forest"));
-  const [user, setUser] = useState<{ name: string; animal: string; title: string } | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isTranslating, setIsTranslating] = useState(false);
   const [translatedResult, setTranslatedResult] = useState("");
+  const [newTitles, setNewTitles] = useState<{ id: string, name: string }[]>([]);
+  const [hasUnread, setHasUnread] = useState(true);
 
   // ユーザー情報の読み込みと遷移チェック
   useEffect(() => {
@@ -23,7 +26,22 @@ export default function Home() {
     if (!savedUser) {
       router.push("/diagnosis");
     } else {
-      setUser(JSON.parse(savedUser));
+      const parsed = JSON.parse(savedUser);
+      // データ形式の移行（migration）
+      if (!parsed.unlockedTitles) parsed.unlockedTitles = [parsed.title];
+      if (parsed.postCount === undefined) parsed.postCount = 0;
+      if (parsed.forestPostCount === undefined) parsed.forestPostCount = 0;
+      if (parsed.lakePostCount === undefined) parsed.lakePostCount = 0;
+      if (parsed.reactionTailCount === undefined) parsed.reactionTailCount = 0;
+      if (parsed.reactionGroomCount === undefined) parsed.reactionGroomCount = 0;
+      if (parsed.reactionStretchCount === undefined) parsed.reactionStretchCount = 0;
+      setUser(parsed);
+    }
+
+    // 通知の既読チェック
+    const isRead = localStorage.getItem("animal_sns_notifications_read");
+    if (isRead === "true") {
+      setHasUnread(false);
     }
   }, [router]);
 
@@ -35,7 +53,7 @@ export default function Home() {
     
     // 1.5秒待ってから翻訳結果を出す（AIの待ち時間を演出）
     setTimeout(() => {
-      const animalName = ANIMAL_DATA[user.animal as AnimalType]?.name || "動物";
+      const animalName = ANIMAL_DATA[user?.animal as AnimalType]?.name || "動物";
       const animalPhrases = [
         `${animalName}らしく、日向ぼっこがしたい気分。しっぽが少し揺れた。`,
         `遠くの方で不思議な音がした。${animalName}の耳を澄ませて、じっとしている。`,
@@ -52,13 +70,62 @@ export default function Home() {
   const handlePost = () => {
     if (!user) return;
 
+    // 称号の解放チェック
+    const unlocked = getNewUnlockedTitles(user, "forest");
+    if (unlocked.length > 0) {
+      setNewTitles(unlocked);
+    }
+
+    const updatedUser: UserData = {
+      ...user,
+      postCount: (user.postCount || 0) + 1,
+      forestPostCount: (user.forestPostCount || 0) + 1,
+      unlockedTitles: [...(user.unlockedTitles || []), ...unlocked.map(t => t.id)],
+    };
+
+    const cleanedTranslated = translatedResult.replace(/[「」]/g, "");
+
+    // 投稿後にランダムなリアクション通知を予約
+    setTimeout(() => {
+      const reactions = ["tail", "groom", "stretch"];
+      const animals = [
+        { name: "ぽち", animal: "dog", id: "u1" },
+        { name: "たま", animal: "cat", id: "u2" },
+        { name: "みるく", animal: "rabbit", id: "u3" },
+        { name: "ごん", animal: "beaver", id: "u4" }
+      ];
+      
+      const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
+      const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
+      
+      const newNotification = {
+        id: `n-${Date.now()}`,
+        type: "reaction",
+        reactionType: randomReaction,
+        userId: randomAnimal.id,
+        userNickname: randomAnimal.name,
+        userAnimal: randomAnimal.animal,
+        postContent: cleanedTranslated.substring(0, 20) + (cleanedTranslated.length > 20 ? "..." : ""),
+        createdAt: new Date().toISOString(),
+        isRead: false,
+      };
+
+      // 既存の通知リストに追加（localStorage経由）
+      const storedNotifications = JSON.parse(localStorage.getItem("animal_sns_custom_notifications") || "[]");
+      localStorage.setItem("animal_sns_custom_notifications", JSON.stringify([newNotification, ...storedNotifications]));
+      
+      // 未読フラグを立てる
+      localStorage.setItem("animal_sns_notifications_read", "false");
+      setHasUnread(true);
+    }, 5000 + Math.random() * 5000); // 5〜10秒後に届く
+
     const newPost = {
       id: Date.now().toString(),
-      userId: "u-me", // 自分のID
+      userId: "u-me", // 自分で作成した投稿
       nickname: user.name,
       title: user.title,
       animalType: user.animal,
-      translatedContent: translatedResult.replace(/[「」]/g, ""),
+      translatedContent: cleanedTranslated,
       originalContent: inputValue,
       spaceType: "forest",
       createdAt: new Date().toISOString(),
@@ -68,8 +135,10 @@ export default function Home() {
         stretch: { count: 0, active: false } 
       },
     };
-    
+
     setPosts([newPost, ...posts]);
+    setUser(updatedUser);
+    localStorage.setItem("animal_sns_user", JSON.stringify(updatedUser));
     setIsModalOpen(false);
     setInputValue("");
     setTranslatedResult("");
@@ -80,6 +149,52 @@ export default function Home() {
 
   // リアクションの切り替え
   const toggleReaction = (postId: string, type: "tail" | "groom" | "stretch") => {
+    if (!user) return;
+
+    let updatedUser = { ...user };
+    const countKey = type === "tail" ? "reactionTailCount" : type === "groom" ? "reactionGroomCount" : "reactionStretchCount";
+    
+    // カウントアップと称号チェック
+    const unlocked = getNewUnlockedTitles(user, "forest", true, type);
+    if (unlocked.length > 0) {
+      setNewTitles(unlocked);
+    }
+    
+    updatedUser = {
+      ...updatedUser,
+      [countKey]: (user[countKey as keyof UserData] as number || 0) + 1,
+      unlockedTitles: [...(user.unlockedTitles || []), ...unlocked.map(t => t.id)],
+    };
+    
+    setUser(updatedUser);
+    localStorage.setItem("animal_sns_user", JSON.stringify(updatedUser));
+
+    // 自分の投稿へのリアクションなら通知を追加
+    const post = posts.find(p => p.id === postId);
+    if (post && post.userId === "u-me") {
+      const currentReaction = post.reactions[type as keyof typeof post.reactions];
+      const newActive = !currentReaction.active;
+
+      if (newActive) {
+        const newNotification = {
+          id: `n-me-${Date.now()}`,
+          type: "reaction",
+          reactionType: type,
+          userId: "u-me",
+          userNickname: user.name,
+          userAnimal: user.animal,
+          postContent: post.translatedContent.substring(0, 20) + (post.translatedContent.length > 20 ? "..." : ""),
+          createdAt: new Date().toISOString(),
+          isRead: false,
+        };
+
+        const storedNotifications = JSON.parse(localStorage.getItem("animal_sns_custom_notifications") || "[]");
+        localStorage.setItem("animal_sns_custom_notifications", JSON.stringify([newNotification, ...storedNotifications]));
+        localStorage.setItem("animal_sns_notifications_read", "false");
+        setHasUnread(true);
+      }
+    }
+
     setPosts(posts.map(post => {
       if (post.id === postId) {
         const currentReaction = post.reactions[type as keyof typeof post.reactions];
@@ -187,7 +302,9 @@ export default function Home() {
           onClick={() => router.push("/notifications")}
           className="text-zinc-400 hover:text-sage transition-colors relative"
         >
-          <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-400 rounded-full border border-white" />
+          {hasUnread && (
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-400 rounded-full border border-white" />
+          )}
           通知
         </button>
         <button 
@@ -277,6 +394,44 @@ export default function Home() {
               )}
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* 称号解放通知 */}
+      <AnimatePresence>
+        {newTitles.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-sage/20 backdrop-blur-md"
+          >
+            <div className="bg-white rounded-[40px] p-8 shadow-2xl border border-sage/10 max-w-sm w-full text-center space-y-6">
+              <div className="w-20 h-20 bg-mustard/10 rounded-full flex items-center justify-center text-4xl mx-auto border-2 border-mustard/20 shadow-inner">
+                ✨
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-xl font-bold text-zinc-800">新しい称号を獲得！</h2>
+                <div className="flex flex-col gap-2">
+                  {newTitles.map(t => (
+                    <div key={t.id} className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-mustard/10 text-mustard font-bold rounded-full border border-mustard/20">
+                      <Award size={16} />
+                      {t.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <p className="text-sm text-zinc-400">
+                プロフィール画面から<br />変更できるようになりました。
+              </p>
+              <button
+                onClick={() => setNewTitles([])}
+                className="w-full h-14 bg-sage text-white rounded-full font-bold shadow-lg shadow-sage/30 active:scale-95 transition-all"
+              >
+                うれしい！
+              </button>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

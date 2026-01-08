@@ -6,19 +6,38 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Award, Settings, LogOut, RefreshCw, X } from "lucide-react";
 import { TITLES } from "@/lib/mock-data";
 import { ANIMAL_DATA, AnimalType } from "@/lib/constants";
+import { UserData } from "@/lib/titles";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = useState<{ name: string; animal: string; title: string } | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const [activeTab, setActiveTab] = useState<"titles" | "stats">("titles");
   const [isAnimalModalOpen, setIsAnimalModalOpen] = useState(false);
+  const [hasUnread, setHasUnread] = useState(true);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("animal_sns_user");
     if (!savedUser) {
       router.push("/diagnosis");
     } else {
-      setUser(JSON.parse(savedUser));
+      const parsed = JSON.parse(savedUser);
+      // 古いデータ形式への対策（migration）
+      if (!parsed.unlockedTitles) parsed.unlockedTitles = [parsed.title];
+      if (parsed.postCount === undefined) parsed.postCount = 0;
+      if (parsed.forestPostCount === undefined) parsed.forestPostCount = 0;
+      if (parsed.lakePostCount === undefined) parsed.lakePostCount = 0;
+      if (parsed.reactionTailCount === undefined) parsed.reactionTailCount = 0;
+      if (parsed.reactionGroomCount === undefined) parsed.reactionGroomCount = 0;
+      if (parsed.reactionStretchCount === undefined) parsed.reactionStretchCount = 0;
+      
+      localStorage.setItem("animal_sns_user", JSON.stringify(parsed));
+      setUser(parsed);
+    }
+
+    // 通知の既読チェック
+    const isRead = localStorage.getItem("animal_sns_notifications_read");
+    if (isRead === "true") {
+      setHasUnread(false);
     }
   }, [router]);
 
@@ -138,26 +157,71 @@ export default function ProfilePage() {
                 </button>
               ))}
               
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2 mt-2">解放条件のある称号</p>
-              {TITLES.unlocked.map((t) => (
-                <div 
-                  key={t.id}
-                  className="flex items-center justify-between p-4 rounded-2xl border bg-zinc-50 border-zinc-100 text-zinc-300"
-                >
-                  <div className="flex flex-col text-left">
-                    <span className="text-sm font-medium">{t.name}</span>
-                    <span className="text-[10px]">{t.condition}</span>
-                  </div>
-                  <Award size={16} className="opacity-30" />
-                </div>
-              ))}
+              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2 mt-2">解放された称号</p>
+              {TITLES.unlocked.map((t) => {
+                const isUnlocked = user.unlockedTitles?.includes(t.id);
+                return (
+                  <button 
+                    key={t.id}
+                    disabled={!isUnlocked}
+                    onClick={() => handleTitleChange(t.name)}
+                    className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
+                      isUnlocked 
+                        ? user.title === t.name
+                          ? "bg-sage/5 border-sage text-sage"
+                          : "bg-white border-sage/5 text-zinc-500 hover:border-sage/20"
+                        : "bg-zinc-50 border-zinc-100 text-zinc-300 cursor-not-allowed"
+                    }`}
+                  >
+                    <div className="flex flex-col text-left">
+                      <span className="text-sm font-medium">{t.name}</span>
+                      {!isUnlocked && <span className="text-[10px]">{t.condition}</span>}
+                    </div>
+                    {isUnlocked ? (
+                      user.title === t.name ? <div className="w-2 h-2 rounded-full bg-sage" /> : <Award size={16} className="text-mustard opacity-50" />
+                    ) : (
+                      <Award size={16} className="opacity-10" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
           ) : (
             <div className="bg-white rounded-[32px] p-8 border border-sage/5 text-center space-y-4">
               <div className="text-4xl">🌱</div>
-              <p className="text-zinc-400 text-sm">
-                森での記録は、これからゆっくりと<br />刻まれていきます。
-              </p>
+              <div className="space-y-1">
+                <p className="text-zinc-600 font-bold">森の歩み</p>
+                <div className="grid grid-cols-2 gap-4 pt-4">
+                  <div className="flex flex-col p-3 bg-sage/5 rounded-2xl">
+                    <span className="text-xl font-bold text-sage">{user.postCount || 0}</span>
+                    <span className="text-[9px] text-zinc-400 uppercase tracking-wider">総投稿数</span>
+                  </div>
+                  <div className="flex flex-col p-3 bg-sage/5 rounded-2xl">
+                    <span className="text-xl font-bold text-sage">{user.forestPostCount || 0}</span>
+                    <span className="text-[9px] text-zinc-400 uppercase tracking-wider">森の歩み</span>
+                  </div>
+                  <div className="flex flex-col p-3 bg-sage/5 rounded-2xl">
+                    <span className="text-xl font-bold text-sage">{user.lakePostCount || 0}</span>
+                    <span className="text-[9px] text-zinc-400 uppercase tracking-wider">湖の思い出</span>
+                  </div>
+                  <div className="flex flex-col p-3 bg-sage/5 rounded-2xl">
+                    <span className="text-xl font-bold text-sage">{user.reactionTailCount || 0}</span>
+                    <span className="text-[9px] text-zinc-400 uppercase tracking-wider">しっぽを振った回数</span>
+                  </div>
+                  <div className="flex flex-col p-3 bg-sage/5 rounded-2xl">
+                    <span className="text-xl font-bold text-sage">{user.reactionGroomCount || 0}</span>
+                    <span className="text-[9px] text-zinc-400 uppercase tracking-wider">毛づくろい回数</span>
+                  </div>
+                  <div className="flex flex-col p-3 bg-sage/5 rounded-2xl">
+                    <span className="text-xl font-bold text-sage">{user.reactionStretchCount || 0}</span>
+                    <span className="text-[9px] text-zinc-400 uppercase tracking-wider">のびをした回数</span>
+                  </div>
+                </div>
+                <div className="pt-2">
+                  <span className="text-2xl font-bold text-mustard">{user.unlockedTitles?.length || 0}</span>
+                  <span className="text-[10px] text-zinc-400 ml-1">獲得した称号</span>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -194,7 +258,9 @@ export default function ProfilePage() {
           onClick={() => router.push("/notifications")}
           className="text-zinc-400 hover:text-sage transition-colors relative"
         >
-          <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-400 rounded-full border border-white" />
+          {hasUnread && (
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-400 rounded-full border border-white" />
+          )}
           通知
         </button>
         <button className="text-sage font-bold">自分</button>

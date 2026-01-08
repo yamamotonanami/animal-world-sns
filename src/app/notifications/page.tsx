@@ -45,7 +45,38 @@ const MOCK_NOTIFICATIONS = [
 
 export default function NotificationsPage() {
   const router = useRouter();
+  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
   const [user, setUser] = useState<{ name: string; animal: string; title: string } | null>(null);
+
+  useEffect(() => {
+    // 1. 読んだ通知IDとカスタム通知を取得
+    const readIds = JSON.parse(localStorage.getItem("animal_sns_read_notification_ids") || "[]");
+    const customNotifications = JSON.parse(localStorage.getItem("animal_sns_custom_notifications") || "[]");
+    
+    // 全ての通知をマージ
+    const allNotifications = [...customNotifications, ...MOCK_NOTIFICATIONS];
+    
+    // 2. 表示する通知の既読状態を更新
+    const updatedNotifications = allNotifications.map(n => ({
+      ...n,
+      isRead: n.isRead || readIds.includes(n.id)
+    }));
+    setNotifications(updatedNotifications);
+
+    // 3. 画面を開いたらすべて既読にする
+    const allIds = allNotifications.map(n => n.id);
+    localStorage.setItem("animal_sns_read_notification_ids", JSON.stringify(allIds));
+    
+    // 全体の通知バッジ用フラグも更新
+    localStorage.setItem("animal_sns_notifications_read", "true");
+
+    // UI上の反映を1秒後に行う（ユーザーが「あ、新着が来た」と認識した後に既読にする演出）
+    const timer = setTimeout(() => {
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("animal_sns_user");
@@ -90,7 +121,7 @@ export default function NotificationsPage() {
       </header>
 
       <div className="p-4 space-y-3">
-        {MOCK_NOTIFICATIONS.map((notification) => (
+        {notifications.map((notification) => (
           <motion.div
             key={notification.id}
             initial={{ opacity: 0, y: 10 }}
@@ -149,7 +180,7 @@ export default function NotificationsPage() {
           </motion.div>
         ))}
 
-        {MOCK_NOTIFICATIONS.length === 0 && (
+        {notifications.length === 0 && (
           <div className="py-20 text-center space-y-4">
             <div className="text-4xl">🍃</div>
             <p className="text-zinc-400 text-sm">まだ通知はありません。<br />ゆったりと過ごしましょう。</p>

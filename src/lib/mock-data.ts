@@ -12,9 +12,14 @@ export const TITLES = {
     "震えるしっぽの冒険家",
   ],
   unlocked: [
-    { id: "first-step", name: "はじめての足跡", condition: "最初の投稿を完了する" },
-    { id: "sun-master", name: "日向ぼっこの達人", condition: "晴れた日の日中に投稿" },
-    { id: "night-runner", name: "真夜中の大運動家", condition: "深夜に投稿" },
+    { id: "first-step", name: "はじめての足跡", condition: "森のタイムラインで初めて投稿する" },
+    { id: "lake-visitor", name: "湖のほとりで一休み", condition: "湖のタイムラインに初めて投稿する" },
+    { id: "sun-master", name: "日向ぼっこの達人", condition: "晴れた日の日中（10〜15時）に累計3回投稿する" },
+    { id: "night-runner", name: "真夜中の大運動家", condition: "深夜（1〜4時）に累計3回投稿する" },
+    { id: "grooming-artist", name: "換毛期の芸術家", condition: "「毛づくろい」を累計5回行う" },
+    { id: "mofumofu-essence", name: "もふもふの体現者", condition: "「しっぽ」を累計5回行う" },
+    { id: "window-guard", name: "窓辺の警備隊長", condition: "「のび」を累計5回行う" },
+    { id: "forest-guardian", name: "森の番人", condition: "「森」への累計投稿数が10回を超える" },
   ],
 };
 

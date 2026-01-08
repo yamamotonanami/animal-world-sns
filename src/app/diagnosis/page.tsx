@@ -99,11 +99,19 @@ export default function DiagnosisPage() {
   const goToForest = () => {
     // ユーザー情報を保存
     if (result && userName) {
-      localStorage.setItem("animal_sns_user", JSON.stringify({
-        name: userName,
-        animal: result,
-        title: selectedTitle
-      }));
+    const userData = {
+      name: userName,
+      animal: result,
+      title: selectedTitle,
+      unlockedTitles: [selectedTitle], // 初期称号を解放済みリストに入れる
+      postCount: 0,
+      forestPostCount: 0,
+      lakePostCount: 0,
+      reactionTailCount: 0,
+      reactionGroomCount: 0,
+      reactionStretchCount: 0,
+    };
+    localStorage.setItem("animal_sns_user", JSON.stringify(userData));
     }
     router.push("/");
   };
