@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="ja">
       <body className={`${zenMaruGothic.variable} font-maru antialiased bg-zinc-100 flex justify-center`}>
         {/* スマホサイズのコンテナ */}
-        <div className="w-full max-w-[430px] min-h-screen bg-white shadow-2xl flex flex-col relative overflow-x-hidden">
+        <div className="w-full max-w-[430px] min-h-screen shadow-2xl flex flex-col relative overflow-x-hidden">
           <main className="flex-grow">
             {children}
           </main>

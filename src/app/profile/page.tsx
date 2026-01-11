@@ -248,8 +248,9 @@ export default function ProfilePage() {
       </div>
 
       {/* 下部ナビゲーション */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-[380px] bg-white/90 backdrop-blur-xl border border-sage/20 shadow-2xl rounded-full px-8 py-3 flex items-center justify-between z-20">
-        <button onClick={() => router.push("/")} className="text-zinc-400 hover:text-sage transition-colors">森</button>
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-[420px] bg-white/90 backdrop-blur-xl border border-sage/20 shadow-2xl rounded-full px-6 py-3 flex items-center justify-between z-20">
+        <button onClick={() => router.push("/")} className="text-zinc-400 hover:text-sage transition-colors">街</button>
+        <button onClick={() => router.push("/forest")} className="text-zinc-400 hover:text-sage transition-colors">森</button>
         <button onClick={() => router.push("/lake")} className="text-zinc-400 hover:text-sage transition-colors">湖</button>
         <div className="w-12 h-12 bg-sage/10 rounded-full flex items-center justify-center text-sage cursor-not-allowed">
           <span className="text-3xl mb-1">+</span>

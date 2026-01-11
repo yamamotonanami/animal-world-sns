@@ -2,17 +2,32 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { MOCK_POSTS } from "@/lib/mock-data";
-import { Heart, Sparkles, Coffee, X } from "lucide-react";
+import { MOCK_POSTS, SYSTEM_MESSAGES } from "@/lib/mock-data";
+import { Heart, Sparkles, Coffee, X, Award, Megaphone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ANIMAL_DATA, AnimalType } from "@/lib/constants";
 import { getNewUnlockedTitles, UserData } from "@/lib/titles";
-import { Award } from "lucide-react";
 
 export default function LakePage() {
   const router = useRouter();
-  // 湖の投稿のみを初期表示
-  const [posts, setPosts] = useState(MOCK_POSTS.filter(p => p.spaceType === "lake"));
+  // 湖の投稿とシステムメッセージを初期表示
+  const [posts, setPosts] = useState(() => {
+    const lakePosts = MOCK_POSTS.filter(p => p.spaceType === "lake");
+    const systemMsgs = SYSTEM_MESSAGES.lake.map(msg => ({
+      id: `sys-${Math.random()}`,
+      isSystem: true,
+      content: msg,
+      createdAt: new Date().toISOString(),
+    }));
+    
+    // 投稿の間にランダムにシステムメッセージを挟む
+    const combined = [...lakePosts];
+    systemMsgs.forEach(msg => {
+      const index = Math.floor(Math.random() * (combined.length + 1));
+      combined.splice(index, 0, msg as any);
+    });
+    return combined;
+  });
   const [user, setUser] = useState<UserData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -129,7 +144,7 @@ export default function LakePage() {
       },
     };
 
-    setPosts([newPost, ...posts]);
+    setPosts([newPost as any, ...posts]);
     setUser(updatedUser);
     localStorage.setItem("animal_sns_user", JSON.stringify(updatedUser));
     setIsModalOpen(false);
@@ -203,77 +218,104 @@ export default function LakePage() {
     }));
   };
 
-  if (!user) return <div className="min-h-screen bg-white" />;
+  if (!user) return <div className="min-h-screen" />;
 
   return (
-    <div className="pb-20 min-h-screen bg-lake-pattern">
-      {/* ヘッダー */}
-      <header className="sticky top-0 z-10 bg-white/60 backdrop-blur-md border-b border-sage/10 px-6 py-4">
-        <h1 className="text-xl font-bold text-sage">湖のタイムライン</h1>
-        <p className="text-xs text-zinc-400">水面に映る、穏やかな時間</p>
-      </header>
+    <div className="pb-20 min-h-screen relative overflow-hidden">
+      {/* 背景画像レイヤー */}
+      <div 
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: `linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5)), url('https://images.unsplash.com/photo-1439066615861-d1af74d74000?q=80&w=1000&auto=format&fit=crop')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
 
-      {/* 投稿一覧 */}
+      <div className="relative z-10">
+        {/* ヘッダー */}
+        <header className="sticky top-0 z-10 bg-white/60 backdrop-blur-md border-b border-sage/10 px-6 py-4">
+          <h1 className="text-xl font-bold text-sage">湖のタイムライン</h1>
+          <p className="text-xs text-zinc-400">水面に映る、穏やかな時間</p>
+        </header>
+
+        {/* 投稿一覧 */}
       <div className="flex flex-col gap-4 p-4">
-        {posts.map((post) => (
-          <div
-            key={post.id}
-            className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-sm border border-sage/5 transition-all hover:shadow-md"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <button 
-                onClick={() => router.push(`/profile/${post.userId}`)}
-                className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center text-xl hover:scale-110 active:scale-95 transition-all cursor-pointer"
-              >
-                {ANIMAL_DATA[post.animalType as AnimalType]?.emoji || "🐾"}
-              </button>
-              <div 
-                onClick={() => router.push(`/profile/${post.userId}`)}
-                className="cursor-pointer group"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] bg-sage/10 text-sage px-2 py-0.5 rounded-full group-hover:bg-sage/20 transition-all">
-                    {post.title}
-                  </span>
+        {posts.map((post: any) => (
+          post.isSystem ? (
+            <div key={post.id} className="bg-white/90 backdrop-blur-md rounded-2xl p-4 border border-sage/20 shadow-sm flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-sage/10 flex items-center justify-center text-sage">
+                <Megaphone size={16} />
+              </div>
+              <p className="text-xs text-sage font-bold leading-relaxed">{post.content}</p>
+            </div>
+          ) : (
+            <div
+              key={post.id}
+              className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-sm border border-sage/5 transition-all hover:shadow-md"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <button 
+                  onClick={() => router.push(`/profile/${post.userId}`)}
+                  className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center text-xl hover:scale-110 active:scale-95 transition-all cursor-pointer"
+                >
+                  {ANIMAL_DATA[post.animalType as AnimalType]?.emoji || "🐾"}
+                </button>
+                <div 
+                  onClick={() => router.push(`/profile/${post.userId}`)}
+                  className="cursor-pointer group"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] bg-sage/10 text-sage px-2 py-0.5 rounded-full group-hover:bg-sage/20 transition-all">
+                      {post.title}
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-zinc-800 group-hover:text-sage transition-all">{post.nickname}</h3>
                 </div>
-                <h3 className="font-bold text-zinc-800 group-hover:text-sage transition-all">{post.nickname}</h3>
+              </div>
+              <p className="text-zinc-700 leading-relaxed mb-6">
+                {post.translatedContent}
+              </p>
+              {/* リアクション（数値なし） */}
+              <div className="flex gap-6 items-center border-t border-sage/5 pt-4">
+                <button 
+                  onClick={() => toggleReaction(post.id, "tail")}
+                  className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.tail.active ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
+                >
+                  <Heart size={18} fill={post.reactions.tail.active ? "currentColor" : "none"} />
+                  <span className="text-[10px] font-medium uppercase tracking-wider">しっぽ</span>
+                </button>
+                <button 
+                  onClick={() => toggleReaction(post.id, "groom")}
+                  className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.groom.active ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
+                >
+                  <Sparkles size={18} />
+                  <span className="text-[10px] font-medium uppercase tracking-wider">毛づくろい</span>
+                </button>
+                <button 
+                  onClick={() => toggleReaction(post.id, "stretch")}
+                  className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.stretch.active ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
+                >
+                  <Coffee size={18} />
+                  <span className="text-[10px] font-medium uppercase tracking-wider">のび</span>
+                </button>
               </div>
             </div>
-            <p className="text-zinc-700 leading-relaxed mb-6">
-              {post.translatedContent}
-            </p>
-            {/* リアクション（数値なし） */}
-            <div className="flex gap-6 items-center border-t border-sage/5 pt-4">
-              <button 
-                onClick={() => toggleReaction(post.id, "tail")}
-                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.tail.active ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
-              >
-                <Heart size={18} fill={post.reactions.tail.active ? "currentColor" : "none"} />
-                <span className="text-[10px] font-medium uppercase tracking-wider">しっぽ</span>
-              </button>
-              <button 
-                onClick={() => toggleReaction(post.id, "groom")}
-                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.groom.active ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
-              >
-                <Sparkles size={18} />
-                <span className="text-[10px] font-medium uppercase tracking-wider">毛づくろい</span>
-              </button>
-              <button 
-                onClick={() => toggleReaction(post.id, "stretch")}
-                className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions.stretch.active ? "reaction-glow" : "text-zinc-300 hover:text-sage"}`}
-              >
-                <Coffee size={18} />
-                <span className="text-[10px] font-medium uppercase tracking-wider">のび</span>
-              </button>
-            </div>
-          </div>
+          )
         ))}
       </div>
 
       {/* 下部ナビゲーション */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-[380px] bg-white/90 backdrop-blur-xl border border-sage/20 shadow-2xl rounded-full px-8 py-3 flex items-center justify-between z-20">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-[420px] bg-white/90 backdrop-blur-xl border border-sage/20 shadow-2xl rounded-full px-6 py-3 flex items-center justify-between z-20">
         <button 
           onClick={() => router.push("/")}
+          className="text-zinc-400 hover:text-sage transition-colors"
+        >
+          街
+        </button>
+        <button 
+          onClick={() => router.push("/forest")}
           className="text-zinc-400 hover:text-sage transition-colors"
         >
           森
@@ -323,7 +365,7 @@ export default function LakePage() {
               className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white rounded-t-[40px] p-8 pb-12 z-40 shadow-2xl border-t border-sage/10"
             >
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-bold text-zinc-800">湖のほとりで、今のきもちを</h2>
+                <h2 className="text-lg font-bold text-zinc-800">静かな湖畔で、波紋を広げる</h2>
                 <button 
                   onClick={() => setIsModalOpen(false)}
                   className="p-2 hover:bg-zinc-100 rounded-full transition-colors"
@@ -337,7 +379,7 @@ export default function LakePage() {
                   <textarea
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="湖に投げかけるように、人間の言葉を入力してみてね..."
+                    placeholder="水面に映る、あなたの今の心境は？"
                     className="w-full h-32 p-4 rounded-2xl bg-zinc-50 border-none focus:ring-2 focus:ring-sage/20 resize-none text-zinc-700"
                   />
                   <button
@@ -349,7 +391,7 @@ export default function LakePage() {
                         : "bg-sage text-white shadow-lg shadow-sage/30 hover:scale-[1.02] active:scale-[0.98]"
                     }`}
                   >
-                    {isTranslating ? "波紋が広がっています..." : "動物の言葉に翻訳する"}
+                    {isTranslating ? "湖の静寂に溶け込ませています..." : "動物の言葉に翻訳する"}
                   </button>
                 </div>
               ) : (
@@ -374,7 +416,7 @@ export default function LakePage() {
                       onClick={handlePost}
                       className="flex-[2] h-14 rounded-full font-bold text-white bg-sage shadow-lg shadow-sage/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
                     >
-                      このまま湖に流す
+                      水面にそっと浮かべる
                     </button>
                   </div>
                 </div>
@@ -421,6 +463,7 @@ export default function LakePage() {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </div>
   );
 }

@@ -8,12 +8,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ANIMAL_DATA, AnimalType } from "@/lib/constants";
 import { getNewUnlockedTitles, UserData } from "@/lib/titles";
 
-export default function Home() {
+export default function ForestPage() {
   const router = useRouter();
-  // 街の投稿とシステムメッセージを初期表示
+  // 森の投稿とシステムメッセージを初期表示
   const [posts, setPosts] = useState(() => {
-    const townPosts = MOCK_POSTS.filter(p => p.spaceType === "town");
-    const systemMsgs = SYSTEM_MESSAGES.town.map(msg => ({
+    const forestPosts = MOCK_POSTS.filter(p => p.spaceType === "forest");
+    const systemMsgs = SYSTEM_MESSAGES.forest.map(msg => ({
       id: `sys-${Math.random()}`,
       isSystem: true,
       content: msg,
@@ -21,7 +21,7 @@ export default function Home() {
     }));
     
     // 投稿の間にランダムにシステムメッセージを挟む
-    const combined = [...townPosts];
+    const combined = [...forestPosts];
     systemMsgs.forEach(msg => {
       const index = Math.floor(Math.random() * (combined.length + 1));
       combined.splice(index, 0, msg as any);
@@ -143,7 +143,7 @@ export default function Home() {
       animalType: user.animal,
       translatedContent: cleanedTranslated,
       originalContent: inputValue,
-      spaceType: "town",
+      spaceType: "forest",
       createdAt: new Date().toISOString(),
       reactions: { 
         tail: { count: 0, active: false }, 
@@ -236,7 +236,7 @@ export default function Home() {
       <div 
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: `linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2)), url('https://images.unsplash.com/photo-1546436836-07a91091f160?q=80&w=1000&auto=format&fit=crop')`,
+          backgroundImage: `linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5)), url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1000&auto=format&fit=crop')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -246,15 +246,15 @@ export default function Home() {
       <div className="relative z-10">
         {/* ヘッダー */}
         <header className="sticky top-0 z-10 bg-white/60 backdrop-blur-md border-b border-sage/10 px-6 py-4">
-          <h1 className="text-xl font-bold text-sage">街のタイムライン</h1>
-          <p className="text-xs text-zinc-400">賑やかな声が聞こえてきます</p>
+          <h1 className="text-xl font-bold text-sage">森のタイムライン</h1>
+          <p className="text-xs text-zinc-400">穏やかな時間が流れています</p>
         </header>
 
         {/* 投稿一覧 */}
       <div className="flex flex-col gap-4 p-4">
         {posts.map((post: any) => (
           post.isSystem ? (
-            <div key={post.id} className="bg-white/95 backdrop-blur-md rounded-2xl p-4 border border-sage/20 shadow-sm flex items-center gap-3">
+            <div key={post.id} className="bg-white/90 backdrop-blur-md rounded-2xl p-4 border border-sage/20 shadow-sm flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-sage/10 flex items-center justify-center text-sage">
                 <Megaphone size={16} />
               </div>
@@ -263,7 +263,7 @@ export default function Home() {
           ) : (
             <div
               key={post.id}
-              className="bg-white/85 backdrop-blur-sm rounded-3xl p-6 shadow-sm border border-sage/5 transition-all hover:shadow-md"
+              className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-sm border border-sage/5 transition-all hover:shadow-md"
             >
               {/* ユーザー情報 */}
               <div className="flex items-center gap-3 mb-4">
@@ -322,13 +322,13 @@ export default function Home() {
 
       {/* 下部ナビゲーション */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-[420px] bg-white/90 backdrop-blur-xl border border-sage/20 shadow-2xl rounded-full px-6 py-3 flex items-center justify-between z-20">
-        <button className="text-sage font-bold">街</button>
         <button 
-          onClick={() => router.push("/forest")}
+          onClick={() => router.push("/")}
           className="text-zinc-400 hover:text-sage transition-colors"
         >
-          森
+          街
         </button>
+        <button className="text-sage font-bold">森</button>
         <button 
           onClick={() => router.push("/lake")}
           className="text-zinc-400 hover:text-sage transition-colors"
@@ -379,7 +379,7 @@ export default function Home() {
               className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white rounded-t-[40px] p-8 pb-12 z-40 shadow-2xl border-t border-sage/10"
             >
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-bold text-zinc-800">街の広場で、ニュースを届ける</h2>
+                <h2 className="text-lg font-bold text-zinc-800">木漏れ日の中で、つぶやく</h2>
                 <button 
                   onClick={() => setIsModalOpen(false)}
                   className="p-2 hover:bg-zinc-100 rounded-full transition-colors"
@@ -393,7 +393,7 @@ export default function Home() {
                   <textarea
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="街の住人たちに伝えたいことは？"
+                    placeholder="木々に溶け込むような、今の気分は？"
                     className="w-full h-32 p-4 rounded-2xl bg-zinc-50 border-none focus:ring-2 focus:ring-sage/20 resize-none text-zinc-700"
                   />
                   <button
@@ -405,7 +405,7 @@ export default function Home() {
                         : "bg-sage text-white shadow-lg shadow-sage/30 hover:scale-[1.02] active:scale-[0.98]"
                     }`}
                   >
-                    {isTranslating ? "街の喧騒に馴染ませています..." : "動物の言葉に翻訳する"}
+                    {isTranslating ? "森のささやきに変えています..." : "動物の言葉に翻訳する"}
                   </button>
                 </div>
               ) : (
@@ -430,7 +430,7 @@ export default function Home() {
                       onClick={handlePost}
                       className="flex-[2] h-14 rounded-full font-bold text-white bg-sage shadow-lg shadow-sage/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
                     >
-                      街の掲示板にのこす
+                      風にのせて森へ放つ
                     </button>
                   </div>
                 </div>

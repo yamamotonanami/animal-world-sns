@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Coffee, Cloud, Moon, Sun, Heart } from "lucide-react";
+import { Coffee, Cloud, Moon, Sun, Heart, Award } from "lucide-react";
 import { ANIMAL_DATA } from "@/lib/constants";
 
 const QUESTIONS = [
@@ -46,6 +46,8 @@ export default function DiagnosisPage() {
   const [selectedTitle, setSelectedTitle] = useState("ふわふわの新参者");
   const [userName, setUserName] = useState("");
   const [nameError, setNameError] = useState<string | null>(null);
+  const [isStamping, setIsStamping] = useState(false);
+  const [showStamp, setShowStamp] = useState(false);
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
 
   const INITIAL_TITLES = [
@@ -93,7 +95,17 @@ export default function DiagnosisPage() {
     }
 
     setNameError(null);
-    setIsWelcomeModalOpen(true);
+    setIsStamping(true);
+    
+    // スタンプが押される演出（1.5秒後）
+    setTimeout(() => {
+      setShowStamp(true);
+      // さらに1.5秒後にウェルカムモーダルを表示
+      setTimeout(() => {
+        setIsWelcomeModalOpen(true);
+        setIsStamping(false);
+      }, 1500);
+    }, 1000);
   };
 
   const goToForest = () => {
@@ -125,24 +137,38 @@ export default function DiagnosisPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="text-center space-y-8"
+            className="text-center space-y-8 bg-white p-12 rounded-[40px] shadow-2xl border-2 border-sage/10 max-w-sm w-full relative overflow-hidden"
           >
-            <div className="space-y-4">
-              <div className="w-24 h-24 bg-sage/20 rounded-full flex items-center justify-center mx-auto text-4xl">
-                ✨
+            {/* 装飾用の背景要素 */}
+            <div className="absolute top-0 left-0 w-full h-2 bg-sage/20" />
+            <div className="absolute top-0 right-0 p-4 opacity-5">
+              <span className="text-4xl font-black">ENTRY</span>
+            </div>
+
+            <div className="space-y-6">
+              <div className="w-20 h-20 bg-sage/10 rounded-full flex items-center justify-center mx-auto border-2 border-sage/20 shadow-inner">
+                <span className="text-3xl">📝</span>
               </div>
-              <h1 className="text-2xl font-bold text-sage">動物診断</h1>
-              <p className="text-zinc-500 leading-relaxed">
-                あなたの心の波長に合う<br />
-                森の姿をみつけましょう。
+              <div className="space-y-2">
+                <h1 className="text-2xl font-black text-sage tracking-tighter italic">RESIDENT REGISTRATION</h1>
+                <p className="text-[10px] font-bold text-sage/40 uppercase tracking-[0.3em]">住人登録</p>
+              </div>
+              <p className="text-zinc-500 text-sm leading-relaxed">
+                ようこそ、動物たちの世界へ。<br />
+                これから住人登録を行います。<br />
+                あなたについて教えてください。
               </p>
             </div>
+            
             <button
               onClick={handleStart}
-              className="w-64 h-16 bg-sage text-white rounded-full font-bold shadow-lg shadow-sage/30 hover:scale-105 active:scale-95 transition-all"
+              className="w-full h-16 bg-sage text-white rounded-full font-bold shadow-lg shadow-sage/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
             >
-              はじめる
+              登録を開始する
+              <span className="text-xs opacity-50 font-normal">Start Registration</span>
             </button>
+            
+            <p className="text-[10px] text-zinc-300">※所要時間：約1分</p>
           </motion.div>
         )}
 
@@ -152,67 +178,116 @@ export default function DiagnosisPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="w-full max-w-sm space-y-8"
+            className="w-full max-w-sm bg-white p-10 rounded-[40px] shadow-2xl border-2 border-sage/10 relative overflow-hidden"
           >
-            <div className="space-y-2">
-              <p className="text-sage font-bold text-sm uppercase tracking-widest">
-                Question {currentStep} / {QUESTIONS.length}
-              </p>
-              <h2 className="text-xl font-bold leading-tight">
-                {QUESTIONS[currentStep - 1].text}
-              </h2>
-            </div>
+            <div className="absolute top-0 left-0 w-full h-2 bg-sage/20" />
+            
+            <div className="space-y-8">
+              <div className="flex justify-between items-center">
+                <div className="space-y-0.5">
+                  <p className="text-[10px] font-black text-sage/40 uppercase tracking-widest">Section {currentStep}</p>
+                  <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-tighter">Psychological Scan</h3>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] font-black text-sage italic">{currentStep} / {QUESTIONS.length}</p>
+                </div>
+              </div>
 
-            <div className="space-y-4">
-              {QUESTIONS[currentStep - 1].options.map((option) => (
-                <button
-                  key={option.id}
-                  onClick={() => handleAnswer(option.point)}
-                  className="w-full p-5 text-left bg-white rounded-2xl border border-sage/10 hover:border-sage shadow-sm hover:shadow-md transition-all group"
-                >
-                  <span className="text-zinc-600 group-hover:text-sage transition-colors">
-                    {option.text}
-                  </span>
-                </button>
-              ))}
+              <div className="space-y-4">
+                <h2 className="text-lg font-bold leading-snug text-zinc-700 min-h-[3.5rem] flex items-center">
+                  {QUESTIONS[currentStep - 1].text}
+                </h2>
+              </div>
+
+              <div className="space-y-3">
+                {QUESTIONS[currentStep - 1].options.map((option) => (
+                  <button
+                    key={option.id}
+                    onClick={() => handleAnswer(option.point)}
+                    className="w-full p-5 text-left bg-zinc-50 rounded-2xl border border-transparent hover:border-sage/30 hover:bg-white hover:shadow-lg transition-all group flex items-center gap-3"
+                  >
+                    <div className="w-6 h-6 rounded-full border border-sage/20 flex items-center justify-center text-[10px] font-bold text-sage/40 group-hover:bg-sage group-hover:text-white group-hover:border-sage transition-all">
+                      {option.id.toUpperCase()}
+                    </div>
+                    <span className="text-sm font-medium text-zinc-600 group-hover:text-zinc-800 transition-colors flex-1">
+                      {option.text}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="mt-8 pt-6 border-t border-zinc-100 flex justify-center">
+              <div className="flex gap-1.5">
+                {QUESTIONS.map((_, i) => (
+                  <div 
+                    key={i} 
+                    className={`h-1 rounded-full transition-all ${i + 1 === currentStep ? "w-6 bg-sage" : "w-2 bg-sage/10"}`} 
+                  />
+                ))}
+              </div>
             </div>
           </motion.div>
         )}
 
-        {currentStep > QUESTIONS.length && result && (
+        {currentStep > QUESTIONS.length && currentStep <= QUESTIONS.length + 1 && result && (
           <motion.div
             key="result"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center space-y-8 max-w-sm"
+            className="text-center space-y-8 max-w-sm bg-white p-10 rounded-[40px] shadow-2xl border-2 border-sage/10 relative overflow-hidden"
           >
-            <div className="space-y-4">
-              <p className="text-sage font-bold tracking-widest uppercase text-sm">診断結果</p>
-              <div className="text-7xl mb-4">{ANIMAL_RESULTS[result].emoji}</div>
-              <h2 className="text-3xl font-bold text-zinc-800">
-                あなたは「{ANIMAL_RESULTS[result].name}」
-              </h2>
-              <p className="text-zinc-500 leading-relaxed">
-                {ANIMAL_RESULTS[result].description}
-              </p>
+            <div className="absolute top-0 left-0 w-full h-2 bg-sage/20" />
+            
+            <div className="space-y-6">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black text-sage/40 uppercase tracking-widest">Classification Result</p>
+                <h2 className="text-xl font-black text-zinc-700 italic">PERSONA IDENTIFIED</h2>
+              </div>
+              
+              <div className="relative inline-block">
+                <div className="text-7xl mb-4 relative z-10">{ANIMAL_RESULTS[result].emoji}</div>
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.5, type: "spring" }}
+                  className="absolute -top-2 -right-2 w-8 h-8 bg-mustard rounded-full flex items-center justify-center text-white text-xs border-2 border-white shadow-lg z-20"
+                >
+                  ✔
+                </motion.div>
+              </div>
+              
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold text-zinc-800">
+                  {ANIMAL_RESULTS[result].name}
+                </h2>
+                <div className="w-12 h-0.5 bg-sage/20 mx-auto" />
+                <p className="text-zinc-500 text-xs leading-relaxed px-4">
+                  {ANIMAL_RESULTS[result].description}
+                </p>
+              </div>
             </div>
 
-            <div className="p-6 bg-sage/5 rounded-3xl border border-sage/10 space-y-4 text-left">
-              <p className="text-xs text-sage font-bold text-center uppercase tracking-widest">
-                あなたの二つ名（初期称号）
+            <div className="p-6 bg-sage/5 rounded-3xl border border-sage/10 space-y-4 text-left relative">
+              <div className="absolute top-0 right-0 p-3 opacity-10">
+                <Award size={24} />
+              </div>
+              <p className="text-[10px] text-sage font-black uppercase tracking-[0.2em] mb-2 border-b border-sage/10 pb-1">
+                Initial Title Selection
               </p>
               <div className="flex flex-col gap-2">
                 {INITIAL_TITLES.map((title) => (
                   <button
                     key={title}
                     onClick={() => setSelectedTitle(title)}
-                    className={`p-3 rounded-xl text-sm font-medium transition-all border ${
+                    className={`p-3 rounded-xl text-xs font-bold transition-all border text-left flex items-center justify-between ${
                       selectedTitle === title
-                        ? "bg-white border-sage text-sage shadow-sm scale-[1.02]"
-                        : "bg-transparent border-transparent text-zinc-400 hover:text-zinc-600"
+                        ? "bg-white border-sage text-sage shadow-md translate-x-1"
+                        : "bg-transparent border-transparent text-zinc-400 hover:text-zinc-500"
                     }`}
                   >
-                    {title}
+                    <span>{title}</span>
+                    {selectedTitle === title && <div className="w-1.5 h-1.5 rounded-full bg-sage" />}
                   </button>
                 ))}
               </div>
@@ -221,15 +296,16 @@ export default function DiagnosisPage() {
             <div className="flex flex-col gap-3">
               <button
                 onClick={handleFinishDiagnosis}
-                className="w-full h-16 bg-sage text-white rounded-full font-bold shadow-lg shadow-sage/30 hover:scale-105 active:scale-95 transition-all"
+                className="w-full h-16 bg-sage text-white rounded-full font-bold shadow-lg shadow-sage/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
               >
-                この姿で森に入る
+                この姿で進む
+                <span className="text-[10px] opacity-50 font-normal italic">Accept Identity</span>
               </button>
               <button
                 onClick={() => setCurrentStep(QUESTIONS.length + 2)}
-                className="w-full h-14 text-zinc-400 font-medium hover:text-sage transition-colors"
+                className="text-zinc-400 text-[10px] font-bold uppercase tracking-widest hover:text-sage transition-colors"
               >
-                自分で他の動物を選ぶ
+                姿を変更する / Change Persona
               </button>
             </div>
           </motion.div>
@@ -240,11 +316,14 @@ export default function DiagnosisPage() {
             key="selection"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center space-y-8 w-full max-w-sm"
+            className="text-center space-y-8 w-full max-w-sm bg-white p-10 rounded-[40px] shadow-2xl border-2 border-sage/10 relative overflow-hidden"
           >
+            <div className="absolute top-0 left-0 w-full h-2 bg-sage/20" />
+            
             <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-zinc-800">どの姿になりますか？</h2>
-              <p className="text-zinc-500">あなたが一番しっくりくる姿を選んでね。</p>
+              <p className="text-[10px] font-black text-sage/40 uppercase tracking-widest">Manual Override</p>
+              <h2 className="text-xl font-black text-zinc-700 italic">CHOOSE IDENTITY</h2>
+              <p className="text-zinc-400 text-[10px] uppercase font-bold">あなたが一番しっくりくる姿を選んでください。</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -259,20 +338,20 @@ export default function DiagnosisPage() {
                   className={`p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-2 ${
                     result === id 
                       ? "border-sage bg-sage/5 shadow-inner" 
-                      : "border-sage/10 bg-white hover:border-sage/30 shadow-sm"
+                      : "border-zinc-100 bg-white hover:border-sage/30 shadow-sm"
                   }`}
                 >
                   <span className="text-4xl">{animal.emoji}</span>
-                  <span className="font-bold text-zinc-700">{animal.name}</span>
+                  <span className="font-bold text-xs text-zinc-700 uppercase tracking-tighter">{animal.name}</span>
                 </button>
               ))}
             </div>
 
             <button
               onClick={() => setCurrentStep(QUESTIONS.length + 1)}
-              className="text-zinc-400 hover:text-sage transition-colors"
+              className="text-zinc-400 text-[10px] font-bold uppercase tracking-widest hover:text-sage transition-colors border-b border-zinc-100 pb-1"
             >
-              診断結果に戻る
+              診断結果に戻る / Return to Result
             </button>
           </motion.div>
         )}
@@ -282,29 +361,38 @@ export default function DiagnosisPage() {
             key="name-input"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center space-y-8 w-full max-w-sm"
+            className="text-center space-y-8 w-full max-w-sm bg-white p-10 rounded-[40px] shadow-2xl border-2 border-sage/10 relative overflow-hidden"
           >
+            <div className="absolute top-0 left-0 w-full h-2 bg-sage/20" />
+            
             <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-zinc-800">森での呼び名は？</h2>
-              <p className="text-zinc-500">ひらがな・カタカナ6文字以内で教えてね。</p>
+              <p className="text-[10px] font-black text-sage/40 uppercase tracking-widest">Final Step</p>
+              <h2 className="text-xl font-black text-zinc-700 italic">REGISTRATION</h2>
+              <p className="text-zinc-400 text-[10px] uppercase font-bold">世界での呼び名を決定します。</p>
             </div>
 
             <div className="space-y-4">
-              <input
-                type="text"
-                value={userName}
-                onChange={(e) => {
-                  setUserName(e.target.value);
-                  if (nameError) setNameError(null); // 入力し始めたらエラーを消す
-                }}
-                placeholder="なまえを入力"
-                className={`w-full h-16 px-6 text-center text-xl font-bold bg-white rounded-2xl border-2 transition-all focus:outline-none ${
-                  nameError ? "border-red-400" : "border-sage/20 focus:border-sage"
-                }`}
-                autoFocus
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  value={userName}
+                  onChange={(e) => {
+                    setUserName(e.target.value);
+                    if (nameError) setNameError(null); // 入力し始めたらエラーを消す
+                  }}
+                  placeholder="NAME"
+                  className={`w-full h-20 px-6 text-center text-2xl font-black bg-zinc-50 rounded-2xl border-2 transition-all focus:outline-none tracking-widest ${
+                    nameError ? "border-red-400" : "border-sage/20 focus:border-sage"
+                  }`}
+                  autoFocus
+                />
+                <div className="absolute top-0 left-0 p-2 opacity-5">
+                  <span className="text-[8px] font-black uppercase">Official Use Only</span>
+                </div>
+              </div>
+              
               <div className="flex flex-col gap-1">
-                <div className="flex justify-between px-2 text-[10px] font-bold text-sage/40 uppercase tracking-widest">
+                <div className="flex justify-between px-2 text-[10px] font-black text-sage/40 uppercase tracking-widest italic">
                   <span>{selectedTitle}</span>
                   <span>{userName.length} / 6</span>
                 </div>
@@ -313,7 +401,7 @@ export default function DiagnosisPage() {
                     <motion.p
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-[10px] text-red-400 font-bold"
+                      className="text-[10px] text-red-400 font-bold uppercase"
                     >
                       {nameError}
                     </motion.p>
@@ -321,20 +409,89 @@ export default function DiagnosisPage() {
                 </AnimatePresence>
               </div>
             </div>
+            
+            <div className="p-4 bg-sage/5 rounded-2xl border border-sage/10 text-left">
+              <p className="text-[9px] text-zinc-400 leading-relaxed font-medium italic">
+                ※ひらがな・カタカナ6文字以内で入力してください。この名前は市民名簿に登録され、変更には再登録が必要となります。
+              </p>
+            </div>
 
-            <button
-              onClick={finishRegistration}
-              className="w-full h-16 bg-sage text-white rounded-full font-bold shadow-lg shadow-sage/30 hover:scale-105 active:scale-95 transition-all"
-            >
-              決定する
-            </button>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={finishRegistration}
+                className="w-full h-16 bg-sage text-white rounded-full font-bold shadow-lg shadow-sage/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+              >
+                登録を完了する
+                <span className="text-[10px] opacity-50 font-normal italic">Finalize</span>
+              </button>
 
-            <button
-              onClick={() => setCurrentStep(QUESTIONS.length + 1)}
-              className="text-zinc-400 hover:text-sage transition-colors"
-            >
-              やり直す
-            </button>
+              <button
+                onClick={() => setCurrentStep(QUESTIONS.length + 1)}
+                className="text-zinc-400 text-[10px] font-bold uppercase tracking-widest hover:text-sage transition-colors"
+              >
+                やり直す / Back
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {isStamping && (
+          <motion.div
+            key="immigration"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-offwhite flex flex-col items-center justify-center p-6"
+          >
+            <div className="w-full max-w-[340px] aspect-[3/4] bg-white rounded-2xl shadow-2xl border-2 border-sage/10 overflow-hidden flex flex-col relative">
+              <div className="bg-sage/10 p-4 border-b border-sage/10 flex justify-between items-center">
+                <span className="text-[10px] font-black text-sage uppercase tracking-[0.3em]">Resident Card / 住人登録証</span>
+                <div className="w-2 h-2 rounded-full bg-sage/20" />
+              </div>
+              
+              <div className="flex-1 p-8 flex flex-col items-center justify-center gap-6">
+                <div className="w-24 h-24 rounded-full bg-sage/5 flex items-center justify-center text-5xl grayscale opacity-50">
+                  {ANIMAL_RESULTS[result as string]?.emoji}
+                </div>
+                
+                <div className="space-y-4 w-full text-center">
+                  <div className="space-y-1 border-b border-sage/5 pb-2">
+                    <p className="text-[8px] text-sage/40 uppercase font-bold tracking-widest">Name</p>
+                    <p className="font-bold text-lg text-zinc-400">{userName}</p>
+                  </div>
+                  <div className="space-y-1 border-b border-sage/5 pb-2">
+                    <p className="text-[8px] text-sage/40 uppercase font-bold tracking-widest">Animal Identity</p>
+                    <p className="font-bold text-sm text-zinc-400">{ANIMAL_RESULTS[result as string]?.name}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[8px] text-sage/40 uppercase font-bold tracking-widest">Registration Date</p>
+                    <p className="font-bold text-xs text-zinc-400">{new Date().toLocaleDateString()}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* スタンプ演出 */}
+              <AnimatePresence>
+                {showStamp && (
+                  <motion.div
+                    initial={{ scale: 3, opacity: 0, rotate: -20 }}
+                    animate={{ scale: 1, opacity: 1, rotate: -15 }}
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                  >
+                    <div className="border-4 border-sage/60 rounded-xl px-4 py-2 text-sage/60 font-black text-3xl uppercase tracking-tighter transform -rotate-12 flex flex-col items-center shadow-lg bg-white/10 backdrop-blur-[1px]">
+                      <span className="text-[10px] tracking-widest mb-1">Registered</span>
+                      <span>登録完了</span>
+                      <span className="text-[8px] mt-1">{new Date().toLocaleDateString()}</span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              <div className="p-4 bg-sage/5 text-center">
+                <p className="text-[8px] text-sage/40 font-medium italic">Synchronizing resident data... Done.</p>
+              </div>
+            </div>
+            <p className="mt-8 text-sage font-bold text-sm animate-pulse">住人登録中...</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -375,9 +532,9 @@ export default function DiagnosisPage() {
 
                 <div className="space-y-2">
                   <p className="text-zinc-500 leading-relaxed">
-                    ようこそ、穏やかな森へ。<br />
-                    ここでは人間の言葉を脱ぎ捨てて、<br />
-                    あなたのままに過ごしてください。
+                    ようこそ、穏やかな世界へ。<br />
+                    まずは賑やかな「街」から、<br />
+                    あなたの新しい生活を始めましょう。
                   </p>
                 </div>
 
@@ -385,7 +542,7 @@ export default function DiagnosisPage() {
                   onClick={goToForest}
                   className="w-full h-16 bg-sage text-white rounded-full font-bold shadow-lg shadow-sage/30 hover:scale-105 active:scale-95 transition-all"
                 >
-                  森へすすむ
+                  街へすすむ
                 </button>
               </motion.div>
             </motion.div>

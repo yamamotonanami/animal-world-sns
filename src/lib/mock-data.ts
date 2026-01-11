@@ -25,6 +25,38 @@ export const TITLES = {
 
 export const MOCK_POSTS = [
   {
+    id: "t1",
+    userId: "u1",
+    nickname: "ぽち",
+    title: "はじめての足跡",
+    animalType: "dog",
+    translatedContent: "街の広場は今日も活気があるね。誰かが落としたクッキーの匂いがする。",
+    originalContent: "街に来ました。賑やかですね。",
+    spaceType: "town",
+    createdAt: new Date().toISOString(),
+    reactions: { 
+      tail: { count: 12, active: true }, 
+      groom: { count: 5, active: false }, 
+      stretch: { count: 8, active: true } 
+    },
+  },
+  {
+    id: "t2",
+    userId: "u2",
+    nickname: "たま",
+    title: "窓辺の警備隊長",
+    animalType: "cat",
+    translatedContent: "石畳が太陽に温められて、歩くと肉球が少しだけ温かいよ。お昼寝に最高の場所を見つけた。",
+    originalContent: "地面が温かくて気持ちいいです。",
+    spaceType: "town",
+    createdAt: new Date().toISOString(),
+    reactions: { 
+      tail: { count: 3, active: false }, 
+      groom: { count: 15, active: true }, 
+      stretch: { count: 2, active: false } 
+    },
+  },
+  {
     id: "1",
     userId: "u1",
     nickname: "ぽち",
@@ -96,3 +128,24 @@ export const MOCK_USERS = [
   { id: "u3", name: "みるく", animal: "rabbit", title: "震えるしっぽの冒険家" },
   { id: "u4", name: "ごん", animal: "beaver", title: "日向ぼっこの達人" },
 ];
+
+export const SYSTEM_MESSAGES = {
+  town: [
+    "中央通りの交通渋滞：今日は荷馬車が多いみたい。ゆっくり歩こう。",
+    "アイスクリーム屋の行列：甘い匂いに誘われて、広場にみんなが集まっているよ。",
+    "時計塔の鐘：お昼の合図が響き渡った。そろそろお腹が空く時間だね。",
+    "街角の音楽家：誰かが奏でるメロディに合わせて、しっぽを振るイヌたちがいるよ。"
+  ],
+  forest: [
+    "今夜の月明かり予報：今夜はとっても明るい月が出るよ。お散歩に最適だね。",
+    "木の実の収穫時期：西の森でどんぐりがたくさん落ちているよ。冬の準備を始めよう。",
+    "そよ風の便り：遠くの森から、春の匂いが運ばれてきたみたい。",
+    "静かな雨：葉っぱを叩く雨音が、心地よいリズムを奏でているよ。"
+  ],
+  lake: [
+    "水位の変化：雨のおかげで、湖の水が少し増えたみたい。魚たちが嬉しそうだ。",
+    "迷い込んだ渡り鳥の情報：北の国から珍しい鳥が遊びに来ているよ。挨拶しに行こう。",
+    "水面のキラキラ：太陽の光が反射して、湖が宝石のように輝いているよ。",
+    "静寂の霧：今朝の湖は深い霧に包まれている。神秘的な雰囲気だね。"
+  ]
+};
