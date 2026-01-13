@@ -55,7 +55,6 @@ export default function TimelineClient({
   const [isTranslating, setIsTranslating] = useState(false);
   const [translatedResult, setTranslatedResult] = useState("");
   const [newTitles, setNewTitles] = useState<{ id: string, name: string }[]>([]);
-  const [hasUnread, setHasUnread] = useState(true);
 
   const handleTranslate = () => {
     if (!inputValue.trim()) return;
@@ -75,7 +74,6 @@ export default function TimelineClient({
     try {
         const { post: newPost, newlyUnlocked } = await createPost(inputValue, cleanedTranslated, spaceType);
         
-        // 新しい称号があればセットしてポップアップを表示
         if (newlyUnlocked && newlyUnlocked.length > 0) {
             setNewTitles(newlyUnlocked);
         }
@@ -130,13 +128,52 @@ export default function TimelineClient({
   };
 
   return (
-    <div className="pb-20 min-h-screen relative overflow-hidden text-zinc-800">
+    <div className="pb-32 min-h-screen relative overflow-hidden text-zinc-800">
       <div className="absolute inset-0 z-0" style={backgroundStyle} />
 
       <div className="relative z-10">
         <header className="sticky top-0 z-10 bg-white/60 backdrop-blur-md border-b border-sage/10 px-6 py-4">
-          <h1 className="text-xl font-bold text-sage">{headerTitle}</h1>
-          <p className="text-xs text-zinc-400">{headerDesc}</p>
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-end">
+              <div>
+                <h1 className="text-xl font-bold text-sage">{headerTitle}</h1>
+                <p className="text-xs text-zinc-400">{headerDesc}</p>
+              </div>
+            </div>
+
+            {/* エリア切り替えトグル */}
+            <div className="bg-sage/5 p-1 rounded-2xl flex items-center gap-1 border border-sage/10 relative">
+              <button 
+                onClick={() => router.push("/")} 
+                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all relative z-10 ${spaceType === "town" ? "text-sage" : "text-zinc-400"}`}
+              >
+                街
+              </button>
+              <button 
+                onClick={() => router.push("/forest")} 
+                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all relative z-10 ${spaceType === "forest" ? "text-sage" : "text-zinc-400"}`}
+              >
+                森
+              </button>
+              <button 
+                onClick={() => router.push("/lake")} 
+                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all relative z-10 ${spaceType === "lake" ? "text-sage" : "text-zinc-400"}`}
+              >
+                湖
+              </button>
+              
+              <motion.div
+                layoutId="activeArea"
+                className="absolute inset-y-1 bg-white rounded-xl shadow-sm border border-sage/10"
+                initial={false}
+                animate={{
+                  left: spaceType === "town" ? "4px" : spaceType === "forest" ? "calc(33.33% + 2px)" : "calc(66.66% + 1px)",
+                  right: spaceType === "town" ? "calc(66.66% + 1px)" : spaceType === "forest" ? "calc(33.33% + 2px)" : "4px",
+                }}
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              />
+            </div>
+          </div>
         </header>
 
         <div className="flex flex-col gap-4 p-4">
@@ -181,14 +218,29 @@ export default function TimelineClient({
           ))}
         </div>
 
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-[420px] bg-white/90 backdrop-blur-xl border border-sage/20 shadow-2xl rounded-full px-6 py-3 flex items-center justify-between z-20">
-            <button onClick={() => router.push("/")} className={`font-bold ${spaceType === "town" ? "text-sage" : "text-zinc-400"}`}>街</button>
-            <button onClick={() => router.push("/forest")} className={`font-bold ${spaceType === "forest" ? "text-sage" : "text-zinc-400"}`}>森</button>
-            <button onClick={() => router.push("/lake")} className={`font-bold ${spaceType === "lake" ? "text-sage" : "text-zinc-400"}`}>湖</button>
-            <button onClick={() => setIsModalOpen(true)} className="w-12 h-12 bg-sage rounded-full flex items-center justify-center text-white shadow-lg shadow-sage/40 hover:scale-110 active:scale-95 transition-all cursor-pointer -translate-y-2"><span className="text-3xl mb-1">+</span></button>
-            <button onClick={() => router.push("/notifications")} className="text-zinc-400 relative">通知</button>
-            <button onClick={() => router.push("/profile")} className={`font-bold ${router.pathname === '/profile' ? 'text-sage' : 'text-zinc-400'}`}>自分</button>
-        </div>
+        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/80 backdrop-blur-xl border-t border-sage/10 px-10 pt-3 pb-8 flex items-center justify-between z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+            <button onClick={() => router.push("/")} className="flex flex-col items-center gap-1 text-sage">
+              <div className="w-6 h-6 flex items-center justify-center">🏠</div>
+              <span className="text-[10px] font-bold">ホーム</span>
+            </button>
+            
+            <button 
+              onClick={() => setIsModalOpen(true)} 
+              className="w-14 h-14 bg-sage rounded-full flex items-center justify-center text-white shadow-lg shadow-sage/40 hover:scale-105 active:scale-95 transition-all -translate-y-6 border-4 border-[#FDFCFB]"
+            >
+              <span className="text-4xl mb-1">+</span>
+            </button>
+
+            <button onClick={() => router.push("/notifications")} className="flex flex-col items-center gap-1 text-zinc-400">
+              <div className="w-6 h-6 flex items-center justify-center">🔔</div>
+              <span className="text-[10px] font-bold">通知</span>
+            </button>
+            
+            <button onClick={() => router.push("/profile")} className="flex flex-col items-center gap-1 text-zinc-400">
+              <div className="w-6 h-6 flex items-center justify-center">👤</div>
+              <span className="text-[10px] font-bold">自分</span>
+            </button>
+        </nav>
 
         <AnimatePresence>
             {isModalOpen && (
@@ -218,7 +270,6 @@ export default function TimelineClient({
             )}
         </AnimatePresence>
 
-        {/* 称号解放ポップアップ */}
         <AnimatePresence>
           {newTitles.length > 0 && (
             <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-sage/20 backdrop-blur-md">

@@ -20,7 +20,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      signInForceRedirectUrl="/diagnosis"
+      signUpForceRedirectUrl="/diagnosis"
+      appearance={{
+        variables: {
+          colorPrimary: "#B2AC88", // Sage Green
+          colorText: "#333333",
+          colorBackground: "#FFFFFF",
+          borderRadius: "1.5rem",
+        },
+        elements: {
+          card: "shadow-2xl border-2 border-sage/10",
+          formButtonPrimary: "bg-sage hover:bg-sage/90 text-white font-bold py-3 transition-all",
+          footerActionLink: "text-sage hover:text-sage/80 font-bold",
+          headerTitle: "font-maru font-bold text-2xl text-sage",
+          headerSubtitle: "font-maru text-zinc-400",
+        },
+      }}
+    >
       <html lang="ja">
         <body className={`${zenMaruGothic.variable} font-maru antialiased bg-zinc-100 flex justify-center`}>
           {/* スマホサイズのコンテナ */}

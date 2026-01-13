@@ -8,9 +8,11 @@ import { TITLES } from "@/lib/mock-data";
 import { ANIMAL_DATA, AnimalType } from "@/lib/constants";
 import { UserData } from "@/lib/titles";
 import { updateUserTitle } from "@/app/actions/user";
+import { useClerk } from "@clerk/nextjs";
 
 export default function ProfileClient({ initialUser }: { initialUser: UserData }) {
   const router = useRouter();
+  const { signOut } = useClerk();
   const [user, setUser] = useState<UserData>(initialUser);
   const [activeTab, setActiveTab] = useState<"titles" | "stats">("titles");
   const [isUpdating, setIsUpdating] = useState(false);
@@ -32,11 +34,26 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
     }
   };
 
+  const handleSignOut = async () => {
+    if (confirm("すみかを出て、入り口に戻りますか？")) {
+      await signOut(() => router.push("/"));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-offwhite pb-24 text-zinc-800">
-      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-sage/10 px-6 py-4 flex items-center gap-4">
-        <button onClick={() => router.push("/")} className="p-2 text-sage"><ChevronLeft size={24} /></button>
-        <h1 className="text-lg font-bold">プロフィール</h1>
+      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-sage/10 px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <button onClick={() => router.push("/")} className="p-2 text-sage"><ChevronLeft size={24} /></button>
+          <h1 className="text-lg font-bold">プロフィール</h1>
+        </div>
+        <button 
+          onClick={handleSignOut}
+          className="p-2 text-zinc-400 hover:text-red-400 transition-colors"
+          title="ログアウト"
+        >
+          <LogOut size={20} />
+        </button>
       </header>
 
       <div className="p-6 space-y-8">
@@ -122,14 +139,27 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
         </div>
       </div>
 
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-[420px] bg-white/90 backdrop-blur-xl border border-sage/20 shadow-2xl rounded-full px-6 py-3 flex items-center justify-between z-20">
-        <button onClick={() => router.push("/")} className="text-zinc-400 hover:text-sage">街</button>
-        <button onClick={() => router.push("/forest")} className="text-zinc-400 hover:text-sage">森</button>
-        <button onClick={() => router.push("/lake")} className="text-zinc-400 hover:text-sage">湖</button>
-        <div className="w-12 h-12 bg-sage/10 rounded-full flex items-center justify-center text-sage cursor-not-allowed"><span className="text-3xl mb-1">+</span></div>
-        <button onClick={() => router.push("/notifications")} className="text-zinc-400">通知</button>
-        <button className="text-sage font-bold">自分</button>
-      </div>
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/80 backdrop-blur-xl border-t border-sage/10 px-10 pt-3 pb-8 flex items-center justify-between z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+        <button onClick={() => router.push("/")} className="flex flex-col items-center gap-1 text-zinc-400">
+          <div className="w-6 h-6 flex items-center justify-center text-lg">🏠</div>
+          <span className="text-[10px] font-bold">ホーム</span>
+        </button>
+        
+        <div className="w-14 h-14 bg-sage/10 rounded-full flex items-center justify-center text-sage -translate-y-6 border-4 border-[#FDFCFB]">
+          <span className="text-3xl mb-1 opacity-20">+</span>
+        </div>
+
+        <button onClick={() => router.push("/notifications")} className="flex flex-col items-center gap-1 text-zinc-400">
+          <div className="w-6 h-6 flex items-center justify-center text-lg">🔔</div>
+          <span className="text-[10px] font-bold">通知</span>
+        </button>
+        
+        <button className="flex flex-col items-center gap-1 text-sage">
+          <div className="w-6 h-6 flex items-center justify-center text-lg">👤</div>
+          <span className="text-[10px] font-bold">自分</span>
+          <motion.div layoutId="nav-dot" className="w-1 h-1 rounded-full bg-sage" />
+        </button>
+      </nav>
     </div>
   );
 }
