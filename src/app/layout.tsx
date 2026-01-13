@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Zen_Maru_Gothic } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 const zenMaruGothic = Zen_Maru_Gothic({
@@ -19,15 +20,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
-      <body className={`${zenMaruGothic.variable} font-maru antialiased bg-zinc-100 flex justify-center`}>
-        {/* スマホサイズのコンテナ */}
-        <div className="w-full max-w-[430px] min-h-screen shadow-2xl flex flex-col relative overflow-x-hidden">
-          <main className="flex-grow">
-            {children}
-          </main>
-        </div>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="ja">
+        <body className={`${zenMaruGothic.variable} font-maru antialiased bg-zinc-100 flex justify-center`}>
+          {/* スマホサイズのコンテナ */}
+          <div className="w-full max-w-[430px] min-h-screen shadow-2xl flex flex-col relative overflow-x-hidden">
+            <main className="flex-grow">
+              {children}
+            </main>
+          </div>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
