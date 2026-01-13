@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Heart, Sparkles, Coffee, X, Award, Megaphone } from "lucide-react";
+import { Heart, Sparkles, Coffee, X, Award, Megaphone, PawPrint } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ANIMAL_DATA, AnimalType } from "@/lib/constants";
 import { UserData } from "@/lib/titles";
@@ -35,20 +35,13 @@ export default function TimelineClient({
   postingUI
 }: TimelineClientProps) {
   const router = useRouter();
-  const [posts, setPosts] = useState(() => {
-    const systemMsgs = systemMessages.map(msg => ({
-      id: `sys-${Math.random()}`,
-      isSystem: true,
-      content: msg,
-      createdAt: new Date().toISOString(),
-    }));
-    const combined = [...initialPosts];
-    systemMsgs.forEach(msg => {
-      const index = Math.floor(Math.random() * (combined.length + 1));
-      combined.splice(index, 0, msg as any);
-    });
-    return combined;
-  });
+  const [posts, setPosts] = useState(initialPosts);
+
+  // クライアントサイドでのマウントを確認する状態（ハイドレーションエラー対策）
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -128,11 +121,18 @@ export default function TimelineClient({
   };
 
   return (
-    <div className="pb-32 min-h-screen relative overflow-hidden text-zinc-800">
-      <div className="absolute inset-0 z-0" style={backgroundStyle} />
+    <div className="pb-32 min-h-screen relative text-zinc-800">
+      {/* 背景レイヤーを absolute から fixed に変更し、枠内に固定 */}
+      <div 
+        className="fixed inset-0 z-0 w-full max-w-[430px] left-1/2 -translate-x-1/2 pointer-events-none" 
+        style={{
+          ...backgroundStyle,
+          backgroundAttachment: 'scroll', // fixed配置にするためアタッチメントはscrollでOK
+        }} 
+      />
 
-      <div className="relative z-10">
-        <header className="sticky top-0 z-10 bg-white/60 backdrop-blur-md border-b border-sage/10 px-6 py-4">
+      <div className="relative z-10 pt-[140px]">
+        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20 bg-white/60 backdrop-blur-md border-b border-sage/10 px-6 py-4">
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-end">
               <div>
@@ -226,9 +226,12 @@ export default function TimelineClient({
             
             <button 
               onClick={() => setIsModalOpen(true)} 
-              className="w-14 h-14 bg-sage rounded-full flex items-center justify-center text-white shadow-lg shadow-sage/40 hover:scale-105 active:scale-95 transition-all -translate-y-6 border-4 border-[#FDFCFB]"
+              className="flex flex-col items-center gap-1 text-zinc-400 hover:text-sage transition-all"
             >
-              <span className="text-4xl mb-1">+</span>
+              <div className="w-6 h-6 flex items-center justify-center">
+                <PawPrint size={20} fill="currentColor" className="-rotate-[45deg]" />
+              </div>
+              <span className="text-[10px] font-bold">投稿</span>
             </button>
 
             <button onClick={() => router.push("/notifications")} className="flex flex-col items-center gap-1 text-zinc-400">
@@ -245,8 +248,25 @@ export default function TimelineClient({
         <AnimatePresence>
             {isModalOpen && (
                 <>
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsModalOpen(false)} className="fixed inset-0 bg-sage/20 backdrop-blur-sm z-30 flex justify-center" />
-                  <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 200 }} className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white rounded-t-[40px] p-8 pb-12 z-40 shadow-2xl border-t border-sage/10">
+                  {/* 背景オーバーレイ：SPサイズ（430px）の枠内のみに適用 */}
+                  <motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    exit={{ opacity: 0 }} 
+                    onClick={() => setIsModalOpen(false)} 
+                    className="fixed inset-0 z-30 flex justify-center"
+                  >
+                    <div className="w-full max-w-[430px] h-full bg-sage/20 backdrop-blur-sm" />
+                  </motion.div>
+
+                  {/* モーダル本体 */}
+                  <motion.div 
+                    initial={{ y: "100%" }} 
+                    animate={{ y: 0 }} 
+                    exit={{ y: "100%" }} 
+                    transition={{ type: "spring", damping: 25, stiffness: 200 }} 
+                    className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white rounded-t-[40px] p-8 pb-12 z-40 shadow-2xl border-t border-sage/10"
+                  >
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-lg font-bold text-zinc-800">{postingUI.modalTitle}</h2>
                         <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-zinc-100 rounded-full"><X className="text-zinc-400" size={24} /></button>
@@ -272,8 +292,18 @@ export default function TimelineClient({
 
         <AnimatePresence>
           {newTitles.length > 0 && (
-            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-sage/20 backdrop-blur-md">
-              <div className="bg-white rounded-[40px] p-8 shadow-2xl border border-sage/10 max-w-sm w-full text-center space-y-6">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }} 
+              animate={{ opacity: 1, scale: 1, y: 0 }} 
+              exit={{ opacity: 0, scale: 0.9, y: 20 }} 
+              className="fixed inset-0 z-[100] flex items-center justify-center p-6"
+            >
+              {/* 背景オーバーレイ */}
+              <div className="absolute inset-0 flex justify-center pointer-events-none">
+                <div className="w-full max-w-[430px] h-full bg-sage/20 backdrop-blur-md" />
+              </div>
+              
+              <div className="relative bg-white rounded-[40px] p-8 shadow-2xl border border-sage/10 max-w-[320px] w-full text-center space-y-6 z-10">
                 <div className="w-20 h-20 bg-mustard/10 rounded-full flex items-center justify-center text-4xl mx-auto border-2 border-mustard/20">✨</div>
                 <div className="space-y-2">
                   <h2 className="text-xl font-bold text-zinc-800">新しい称号を獲得！</h2>

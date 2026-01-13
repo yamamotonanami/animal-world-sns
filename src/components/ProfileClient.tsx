@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, Award, Settings, LogOut, RefreshCw, X } from "lucide-react";
+import { ChevronLeft, Award, Settings, LogOut, RefreshCw, X, PawPrint } from "lucide-react";
 import { TITLES } from "@/lib/mock-data";
 import { ANIMAL_DATA, AnimalType } from "@/lib/constants";
 import { UserData } from "@/lib/titles";
@@ -145,8 +145,11 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
           <span className="text-[10px] font-bold">ホーム</span>
         </button>
         
-        <div className="w-14 h-14 bg-sage/10 rounded-full flex items-center justify-center text-sage -translate-y-6 border-4 border-[#FDFCFB]">
-          <span className="text-3xl mb-1 opacity-20">+</span>
+        <div className="flex flex-col items-center gap-1 text-zinc-400 opacity-40">
+          <div className="w-6 h-6 flex items-center justify-center">
+            <PawPrint size={20} fill="currentColor" className="-rotate-[45deg]" />
+          </div>
+          <span className="text-[10px] font-bold">投稿</span>
         </div>
 
         <button onClick={() => router.push("/notifications")} className="flex flex-col items-center gap-1 text-zinc-400">

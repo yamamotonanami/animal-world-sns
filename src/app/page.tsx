@@ -53,11 +53,23 @@ export default async function Page() {
       };
     }) || [];
 
+    const postsWithSystem = [...formattedPosts];
+    const townMessages = SYSTEM_MESSAGES.town || [];
+    townMessages.forEach((msg, i) => {
+      const index = Math.floor(Math.random() * (postsWithSystem.length + 1));
+      postsWithSystem.splice(index, 0, {
+        id: `sys-town-${i}-${Date.now()}`,
+        isSystem: true,
+        content: msg,
+        createdAt: new Date().toISOString(),
+      } as any);
+    });
+
     return (
       <TimelineClient
-        initialPosts={formattedPosts}
+        initialPosts={postsWithSystem}
         user={user}
-        systemMessages={SYSTEM_MESSAGES.town}
+        systemMessages={[]} // サーバー側で混ぜたので空にする
         spaceType="town"
         headerTitle="街のタイムライン"
         headerDesc="賑やかな声が聞こえてきます"

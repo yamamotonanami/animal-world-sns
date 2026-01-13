@@ -55,11 +55,23 @@ export default async function Page() {
     };
   }) || [];
 
+  const systemMsgs = SYSTEM_MESSAGES.forest || [];
+  const postsWithSystem = [...formattedPosts];
+  systemMsgs.forEach((msg, i) => {
+    const index = Math.floor(Math.random() * (postsWithSystem.length + 1));
+    postsWithSystem.splice(index, 0, {
+      id: `sys-forest-${i}-${Date.now()}`,
+      isSystem: true,
+      content: msg,
+      createdAt: new Date().toISOString(),
+    } as any);
+  });
+
   return (
     <TimelineClient
-      initialPosts={formattedPosts}
+      initialPosts={postsWithSystem}
       user={user}
-      systemMessages={SYSTEM_MESSAGES.forest}
+      systemMessages={[]} // サーバー側で混ぜたので空にする
       spaceType="forest"
       headerTitle="森のタイムライン"
       headerDesc="木々のささやきに耳を澄ませて"

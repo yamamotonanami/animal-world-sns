@@ -55,11 +55,23 @@ export default async function Page() {
     };
   }) || [];
 
+  const systemMsgs = SYSTEM_MESSAGES.lake || [];
+  const postsWithSystem = [...formattedPosts];
+  systemMsgs.forEach((msg, i) => {
+    const index = Math.floor(Math.random() * (postsWithSystem.length + 1));
+    postsWithSystem.splice(index, 0, {
+      id: `sys-lake-${i}-${Date.now()}`,
+      isSystem: true,
+      content: msg,
+      createdAt: new Date().toISOString(),
+    } as any);
+  });
+
   return (
     <TimelineClient
-      initialPosts={formattedPosts}
+      initialPosts={postsWithSystem}
       user={user}
-      systemMessages={SYSTEM_MESSAGES.lake}
+      systemMessages={[]} // サーバー側で混ぜたので空にする
       spaceType="lake"
       headerTitle="湖のタイムライン"
       headerDesc="静かな水面に心が映ります"
