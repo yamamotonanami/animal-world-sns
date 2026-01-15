@@ -132,7 +132,7 @@ export default function TimelineClient({
       />
 
       <div className="relative z-10 pt-[140px]">
-        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20 bg-white/60 backdrop-blur-md border-b border-sage/10 px-6 py-4">
+        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20 bg-white border-b border-sage/10 px-6 py-4">
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-end">
               <div>
@@ -218,7 +218,7 @@ export default function TimelineClient({
           ))}
         </div>
 
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/80 backdrop-blur-xl border-t border-sage/10 px-10 pt-3 pb-8 flex items-center justify-between z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-sage/10 px-10 pt-3 pb-8 flex items-center justify-between z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
             <button onClick={() => router.push("/")} className="flex flex-col items-center gap-1 text-sage">
               <div className="w-6 h-6 flex items-center justify-center">🏠</div>
               <span className="text-[10px] font-bold">ホーム</span>

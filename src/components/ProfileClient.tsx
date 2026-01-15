@@ -42,7 +42,7 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
 
   return (
     <div className="min-h-screen bg-offwhite pb-24 text-zinc-800">
-      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-sage/10 px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-10 bg-white border-b border-sage/10 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button onClick={() => router.push("/")} className="p-2 text-sage"><ChevronLeft size={24} /></button>
           <h1 className="text-lg font-bold">プロフィール</h1>
@@ -139,7 +139,7 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
         </div>
       </div>
 
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/80 backdrop-blur-xl border-t border-sage/10 px-10 pt-3 pb-8 flex items-center justify-between z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-sage/10 px-10 pt-3 pb-8 flex items-center justify-between z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
         <button onClick={() => router.push("/")} className="flex flex-col items-center gap-1 text-zinc-400">
           <div className="w-6 h-6 flex items-center justify-center text-lg">🏠</div>
           <span className="text-[10px] font-bold">ホーム</span>
