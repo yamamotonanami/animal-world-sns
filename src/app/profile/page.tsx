@@ -40,6 +40,7 @@ export default async function Page() {
     reactionTailCount: user.reaction_tail_count || 0,
     reactionGroomCount: user.reaction_groom_count || 0,
     reactionStretchCount: user.reaction_stretch_count || 0,
+    lastArea: user.last_area || 'town',
   };
 
   return <ProfileClient initialUser={formattedUser} />;

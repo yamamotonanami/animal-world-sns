@@ -4,6 +4,7 @@ import TimelineClient from "@/components/TimelineClient";
 import { SYSTEM_MESSAGES } from "@/lib/mock-data";
 import { redirect } from "next/navigation";
 import { ensureSupabaseUser } from "@/lib/supabase/auth-helpers";
+import { AREAS_CONFIG } from "@/lib/constants";
 
 export default async function Page() {
   const userId = await getCurrentUserId();
@@ -57,37 +58,35 @@ export default async function Page() {
 
   const systemMsgs = SYSTEM_MESSAGES.forest || [];
   const postsWithSystem = [...formattedPosts];
-  systemMsgs.forEach((msg, i) => {
+  if (systemMsgs.length > 0) {
+    const randomMsg = systemMsgs[Math.floor(Math.random() * systemMsgs.length)];
     const index = Math.floor(Math.random() * (postsWithSystem.length + 1));
     postsWithSystem.splice(index, 0, {
-      id: `sys-forest-${i}-${Date.now()}`,
+      id: `sys-forest-${Date.now()}`,
       isSystem: true,
-      content: msg,
+      content: randomMsg,
       createdAt: new Date().toISOString(),
     } as any);
-  });
+  }
+
+  const config = AREAS_CONFIG.forest;
 
   return (
     <TimelineClient
       initialPosts={postsWithSystem}
       user={user}
       systemMessages={[]} // サーバー側で混ぜたので空にする
-      spaceType="forest"
-      headerTitle="森のタイムライン"
-      headerDesc="木々のささやきに耳を澄ませて"
+      spaceType={config.id}
+      headerTitle={config.headerTitle}
+      headerDesc={config.headerDesc}
       backgroundStyle={{
-        backgroundImage: `linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1)), url('https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=1000&auto=format&fit=crop')`,
+        backgroundImage: `linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1)), url('${config.bgImage}')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundAttachment: 'fixed',
       }}
-      postingUI={{
-          modalTitle: "木漏れ日の中で、つぶやく",
-          inputPlaceholder: "木々に溶け込むような、今の気分は？",
-          translatingText: "森のささやきに変えています...",
-          submitButton: "風にのせて森へ放つ"
-      }}
+      postingUI={config.postingUI}
     />
   );
 }

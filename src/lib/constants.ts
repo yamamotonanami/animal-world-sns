@@ -22,3 +22,54 @@ export const ANIMAL_DATA = {
 } as const;
 
 export type AnimalType = keyof typeof ANIMAL_DATA;
+
+// 各エリア（バイオーム）の設定を一括管理
+export const AREAS_CONFIG = {
+  town: {
+    id: "town" as const,
+    name: "街",
+    path: "/",
+    headerTitle: "街のタイムライン",
+    headerDesc: "賑やかな声が聞こえてきます",
+    // public/backgrounds/town.jpg を参照
+    bgImage: "/backgrounds/town.jpg",
+    postingUI: {
+      modalTitle: "街の広場で、ニュースを届ける",
+      inputPlaceholder: "街の住人たちに伝えたいことは？",
+      translatingText: "街の喧騒に馴染ませています...",
+      submitButton: "街の掲示板にのこす"
+    }
+  },
+  forest: {
+    id: "forest" as const,
+    name: "森",
+    path: "/forest",
+    headerTitle: "森のタイムライン",
+    headerDesc: "木々のささやきに耳を澄ませて",
+    // public/backgrounds/forest.jpg を参照
+    bgImage: "/backgrounds/forest.jpg",
+    postingUI: {
+      modalTitle: "木漏れ日の中で、つぶやく",
+      inputPlaceholder: "木々に溶け込むような、今の気分は？",
+      translatingText: "森のささやきに変えています...",
+      submitButton: "風にのせて森へ放つ"
+    }
+  },
+  lake: {
+    id: "lake" as const,
+    name: "湖",
+    path: "/lake",
+    headerTitle: "湖のタイムライン",
+    headerDesc: "静かな水面に心が映ります",
+    // public/backgrounds/lake.jpg を参照
+    bgImage: "/backgrounds/lake.jpg",
+    postingUI: {
+      modalTitle: "静かな湖畔で、波紋を広げる",
+      inputPlaceholder: "水面に映る、あなたの今の心境は？",
+      translatingText: "湖の静寂に溶け込ませています...",
+      submitButton: "水面にそっと浮かべる"
+    }
+  }
+};
+
+export type AreaId = keyof typeof AREAS_CONFIG;

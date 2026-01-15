@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ChevronLeft, Heart, Sparkles, Coffee, MessageSquare } from "lucide-react";
-import { ANIMAL_DATA, AnimalType } from "@/lib/constants";
+import { ChevronLeft, Heart, Sparkles, Coffee, MessageSquare, Map, PawPrint } from "lucide-react";
+import { ANIMAL_DATA, AnimalType, AREAS_CONFIG } from "@/lib/constants";
 
 // 通知のモックデータ
 const MOCK_NOTIFICATIONS = [
@@ -189,36 +189,39 @@ export default function NotificationsPage() {
       </div>
 
       {/* 下部ナビゲーション */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-[420px] bg-white/90 backdrop-blur-xl border border-sage/20 shadow-2xl rounded-full px-6 py-3 flex items-center justify-between z-20">
-        <button 
-          onClick={() => router.push("/")}
-          className="text-zinc-400 hover:text-sage transition-colors"
-        >
-          街
-        </button>
-        <button 
-          onClick={() => router.push("/forest")}
-          className="text-zinc-400 hover:text-sage transition-colors"
-        >
-          森
-        </button>
-        <button 
-          onClick={() => router.push("/lake")}
-          className="text-zinc-400 hover:text-sage transition-colors"
-        >
-          湖
-        </button>
-        <div className="w-12 h-12 bg-sage/10 rounded-full flex items-center justify-center text-sage cursor-not-allowed">
-          <span className="text-3xl mb-1">+</span>
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-sage/10 pt-3 pb-8 z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+        <div className="grid grid-cols-5 w-full px-2">
+            <button onClick={() => router.push("/")} className="flex flex-col items-center gap-1 text-zinc-400">
+              <div className="w-6 h-6 flex items-center justify-center text-lg">🏠</div>
+              <span className="text-[10px] font-bold">ホーム</span>
+            </button>
+
+            <button onClick={() => router.push("/areas")} className="flex flex-col items-center gap-1 text-zinc-400 hover:text-sage transition-all">
+              <div className="w-6 h-6 flex items-center justify-center">
+                <Map size={20} />
+              </div>
+              <span className="text-[10px] font-bold">エリア</span>
+            </button>
+            
+            <div className="flex flex-col items-center gap-1 text-zinc-400 opacity-40">
+              <div className="w-6 h-6 flex items-center justify-center">
+                <PawPrint size={20} fill="currentColor" className="-rotate-[45deg]" />
+              </div>
+              <span className="text-[10px] font-bold">投稿</span>
+            </div>
+
+            <button className="flex flex-col items-center gap-1 text-sage">
+              <div className="w-6 h-6 flex items-center justify-center text-lg">🔔</div>
+              <span className="text-[10px] font-bold">通知</span>
+              <motion.div layoutId="nav-dot" className="w-1 h-1 rounded-full bg-sage" />
+            </button>
+            
+            <button onClick={() => router.push("/profile")} className="flex flex-col items-center gap-1 text-zinc-400">
+              <div className="w-6 h-6 flex items-center justify-center text-lg">👤</div>
+              <span className="text-[10px] font-bold">自分</span>
+            </button>
         </div>
-        <button className="text-sage font-bold">通知</button>
-        <button 
-          onClick={() => router.push("/profile")}
-          className="text-zinc-400 hover:text-sage transition-colors"
-        >
-          自分
-        </button>
-      </div>
+      </nav>
     </div>
   );
 }

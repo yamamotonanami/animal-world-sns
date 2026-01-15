@@ -131,6 +131,27 @@ export async function updateUserTitle(titleName: string) {
 }
 
 /**
+ * ユーザーの最後に滞在したエリアを更新する
+ */
+export async function updateLastArea(area: string) {
+  const { userId } = await auth()
+  if (!userId) return { success: false }
+
+  const supabase = createServiceRoleClient()
+  const { error } = await supabase
+    .from('users')
+    .update({ last_area: area })
+    .eq('clerk_id', userId)
+
+  if (error) {
+    console.error('Update last area error:', error)
+    return { success: false }
+  }
+
+  return { success: true }
+}
+
+/**
  * 現在のユーザープロフィールを取得する
  */
 export async function getUserProfile() {

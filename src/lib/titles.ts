@@ -11,6 +11,7 @@ export interface UserData {
   reactionTailCount: number;
   reactionGroomCount: number;
   reactionStretchCount: number;
+  lastArea?: string;
 }
 
 export const TITLE_CONDITIONS = [

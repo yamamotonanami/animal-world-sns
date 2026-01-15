@@ -4,6 +4,7 @@ import TimelineClient from "@/components/TimelineClient";
 import { SYSTEM_MESSAGES } from "@/lib/mock-data";
 import { redirect } from "next/navigation";
 import { ensureSupabaseUser } from "@/lib/supabase/auth-helpers";
+import { AREAS_CONFIG } from "@/lib/constants";
 
 export default async function Page() {
   const userId = await getCurrentUserId();
@@ -57,37 +58,35 @@ export default async function Page() {
 
   const systemMsgs = SYSTEM_MESSAGES.lake || [];
   const postsWithSystem = [...formattedPosts];
-  systemMsgs.forEach((msg, i) => {
+  if (systemMsgs.length > 0) {
+    const randomMsg = systemMsgs[Math.floor(Math.random() * systemMsgs.length)];
     const index = Math.floor(Math.random() * (postsWithSystem.length + 1));
     postsWithSystem.splice(index, 0, {
-      id: `sys-lake-${i}-${Date.now()}`,
+      id: `sys-lake-${Date.now()}`,
       isSystem: true,
-      content: msg,
+      content: randomMsg,
       createdAt: new Date().toISOString(),
     } as any);
-  });
+  }
+
+  const config = AREAS_CONFIG.lake;
 
   return (
     <TimelineClient
       initialPosts={postsWithSystem}
       user={user}
       systemMessages={[]} // サーバー側で混ぜたので空にする
-      spaceType="lake"
-      headerTitle="湖のタイムライン"
-      headerDesc="静かな水面に心が映ります"
+      spaceType={config.id}
+      headerTitle={config.headerTitle}
+      headerDesc={config.headerDesc}
       backgroundStyle={{
-        backgroundImage: `linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1)), url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1000&auto=format&fit=crop')`,
+        backgroundImage: `linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1)), url('${config.bgImage}')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundAttachment: 'fixed',
       }}
-      postingUI={{
-          modalTitle: "静かな湖畔で、波紋を広げる",
-          inputPlaceholder: "水面に映る、あなたの今の心境は？",
-          translatingText: "湖の静寂に溶け込ませています...",
-          submitButton: "水面にそっと浮かべる"
-      }}
+      postingUI={config.postingUI}
     />
   );
 }

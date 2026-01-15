@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, Award, Settings, LogOut, RefreshCw, X, PawPrint } from "lucide-react";
+import { ChevronLeft, Award, Settings, LogOut, RefreshCw, X, PawPrint, Map } from "lucide-react";
 import { TITLES } from "@/lib/mock-data";
-import { ANIMAL_DATA, AnimalType } from "@/lib/constants";
+import { ANIMAL_DATA, AnimalType, AREAS_CONFIG } from "@/lib/constants";
 import { UserData } from "@/lib/titles";
 import { updateUserTitle } from "@/app/actions/user";
 import { useClerk } from "@clerk/nextjs";
@@ -139,29 +139,44 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
         </div>
       </div>
 
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-sage/10 px-10 pt-3 pb-8 flex items-center justify-between z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
-        <button onClick={() => router.push("/")} className="flex flex-col items-center gap-1 text-zinc-400">
-          <div className="w-6 h-6 flex items-center justify-center text-lg">🏠</div>
-          <span className="text-[10px] font-bold">ホーム</span>
-        </button>
-        
-        <div className="flex flex-col items-center gap-1 text-zinc-400 opacity-40">
-          <div className="w-6 h-6 flex items-center justify-center">
-            <PawPrint size={20} fill="currentColor" className="-rotate-[45deg]" />
-          </div>
-          <span className="text-[10px] font-bold">投稿</span>
-        </div>
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-sage/10 pt-3 pb-8 z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+        <div className="grid grid-cols-5 w-full px-2">
+            <button 
+              onClick={() => {
+                const path = AREAS_CONFIG[user.lastArea as keyof typeof AREAS_CONFIG]?.path || '/';
+                router.push(path);
+              }} 
+              className="flex flex-col items-center gap-1 text-zinc-400"
+            >
+              <div className="w-6 h-6 flex items-center justify-center text-lg">🏠</div>
+              <span className="text-[10px] font-bold">ホーム</span>
+            </button>
 
-        <button onClick={() => router.push("/notifications")} className="flex flex-col items-center gap-1 text-zinc-400">
-          <div className="w-6 h-6 flex items-center justify-center text-lg">🔔</div>
-          <span className="text-[10px] font-bold">通知</span>
-        </button>
-        
-        <button className="flex flex-col items-center gap-1 text-sage">
-          <div className="w-6 h-6 flex items-center justify-center text-lg">👤</div>
-          <span className="text-[10px] font-bold">自分</span>
-          <motion.div layoutId="nav-dot" className="w-1 h-1 rounded-full bg-sage" />
-        </button>
+            <button onClick={() => router.push("/areas")} className="flex flex-col items-center gap-1 text-zinc-400 hover:text-sage transition-all">
+              <div className="w-6 h-6 flex items-center justify-center">
+                <Map size={20} />
+              </div>
+              <span className="text-[10px] font-bold">エリア</span>
+            </button>
+            
+            <div className="flex flex-col items-center gap-1 text-zinc-400 opacity-40">
+              <div className="w-6 h-6 flex items-center justify-center">
+                <PawPrint size={20} fill="currentColor" className="-rotate-[45deg]" />
+              </div>
+              <span className="text-[10px] font-bold">投稿</span>
+            </div>
+
+            <button onClick={() => router.push("/notifications")} className="flex flex-col items-center gap-1 text-zinc-400">
+              <div className="w-6 h-6 flex items-center justify-center text-lg">🔔</div>
+              <span className="text-[10px] font-bold">通知</span>
+            </button>
+            
+            <button className="flex flex-col items-center gap-1 text-sage">
+              <div className="w-6 h-6 flex items-center justify-center text-lg">👤</div>
+              <span className="text-[10px] font-bold">自分</span>
+              <motion.div layoutId="nav-dot" className="w-1 h-1 rounded-full bg-sage" />
+            </button>
+        </div>
       </nav>
     </div>
   );

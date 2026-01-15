@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Heart, Sparkles, Coffee, X, Award, Megaphone, PawPrint } from "lucide-react";
+import { Heart, Sparkles, Coffee, X, Award, Megaphone, PawPrint, Map } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ANIMAL_DATA, AnimalType } from "@/lib/constants";
+import { ANIMAL_DATA, AnimalType, AREAS_CONFIG } from "@/lib/constants";
 import { UserData } from "@/lib/titles";
 import { createPost, toggleReaction } from "@/app/actions/post";
+import { updateLastArea } from "@/app/actions/user";
 
 interface TimelineClientProps {
   initialPosts: any[];
@@ -41,7 +42,9 @@ export default function TimelineClient({
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
-  }, []);
+    // 最後に訪れたエリアを保存
+    updateLastArea(spaceType);
+  }, [spaceType]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -131,47 +134,14 @@ export default function TimelineClient({
         }} 
       />
 
-      <div className="relative z-10 pt-[140px]">
+      <div className="relative z-10 pt-[80px]">
         <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20 bg-white border-b border-sage/10 px-6 py-4">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             <div className="flex justify-between items-end">
               <div>
                 <h1 className="text-xl font-bold text-sage">{headerTitle}</h1>
                 <p className="text-xs text-zinc-400">{headerDesc}</p>
               </div>
-            </div>
-
-            {/* エリア切り替えトグル */}
-            <div className="bg-sage/5 p-1 rounded-2xl flex items-center gap-1 border border-sage/10 relative">
-              <button 
-                onClick={() => router.push("/")} 
-                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all relative z-10 ${spaceType === "town" ? "text-sage" : "text-zinc-400"}`}
-              >
-                街
-              </button>
-              <button 
-                onClick={() => router.push("/forest")} 
-                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all relative z-10 ${spaceType === "forest" ? "text-sage" : "text-zinc-400"}`}
-              >
-                森
-              </button>
-              <button 
-                onClick={() => router.push("/lake")} 
-                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all relative z-10 ${spaceType === "lake" ? "text-sage" : "text-zinc-400"}`}
-              >
-                湖
-              </button>
-              
-              <motion.div
-                layoutId="activeArea"
-                className="absolute inset-y-1 bg-white rounded-xl shadow-sm border border-sage/10"
-                initial={false}
-                animate={{
-                  left: spaceType === "town" ? "4px" : spaceType === "forest" ? "calc(33.33% + 2px)" : "calc(66.66% + 1px)",
-                  right: spaceType === "town" ? "calc(66.66% + 1px)" : spaceType === "forest" ? "calc(33.33% + 2px)" : "4px",
-                }}
-                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-              />
             </div>
           </div>
         </header>
@@ -183,21 +153,21 @@ export default function TimelineClient({
                 <div className="w-8 h-8 rounded-full bg-sage/10 flex items-center justify-center text-sage"><Megaphone size={16} /></div>
                 <p className="text-xs text-sage font-bold leading-relaxed">{post.content}</p>
               </div>
-            ) : (
-              <div key={post.id} className="bg-white/85 backdrop-blur-sm rounded-3xl p-6 shadow-sm border border-sage/5 transition-all hover:shadow-md">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center text-xl">
-                    {ANIMAL_DATA[post.animalType as AnimalType]?.emoji || "🐾"}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] bg-sage/10 text-sage px-2 py-0.5 rounded-full">{post.title}</span>
-                    </div>
-                    <h3 className="font-bold text-zinc-800">{post.nickname}</h3>
-                  </div>
-                </div>
-                <p className="text-zinc-700 leading-relaxed mb-6">{post.translatedContent}</p>
-                <div className="flex gap-6 items-center border-t border-sage/5 pt-4">
+                    ) : (
+                      <div key={post.id} className="bg-white/85 backdrop-blur-sm rounded-3xl p-4 shadow-sm border border-sage/5 transition-all hover:shadow-md">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center text-xl">
+                            {ANIMAL_DATA[post.animalType as AnimalType]?.emoji || "🐾"}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] bg-sage/10 text-sage px-2 py-0.5 rounded-full">{post.title}</span>
+                            </div>
+                            <h3 className="font-bold text-zinc-800 text-sm">{post.nickname}</h3>
+                          </div>
+                        </div>
+                        <p className="text-zinc-700 leading-relaxed mb-3 text-sm">{post.translatedContent}</p>
+                        <div className="flex gap-6 items-center border-t border-sage/5 pt-3">
                   {["tail", "groom", "stretch"].map((type) => (
                       <button 
                         key={type}
@@ -218,31 +188,48 @@ export default function TimelineClient({
           ))}
         </div>
 
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-sage/10 px-10 pt-3 pb-8 flex items-center justify-between z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
-            <button onClick={() => router.push("/")} className="flex flex-col items-center gap-1 text-sage">
-              <div className="w-6 h-6 flex items-center justify-center">🏠</div>
-              <span className="text-[10px] font-bold">ホーム</span>
-            </button>
-            
-            <button 
-              onClick={() => setIsModalOpen(true)} 
-              className="flex flex-col items-center gap-1 text-zinc-400 hover:text-sage transition-all"
-            >
-              <div className="w-6 h-6 flex items-center justify-center">
-                <PawPrint size={20} fill="currentColor" className="-rotate-[45deg]" />
-              </div>
-              <span className="text-[10px] font-bold">投稿</span>
-            </button>
+        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-sage/10 pt-3 pb-8 z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+            <div className="grid grid-cols-5 w-full px-2">
+                <button 
+                  onClick={() => {
+                    const lastArea = user?.last_area || 'town';
+                    const path = AREAS_CONFIG[lastArea as keyof typeof AREAS_CONFIG]?.path || '/';
+                    router.push(path);
+                  }} 
+                  className="flex flex-col items-center gap-1 text-sage font-bold"
+                >
+                  <div className="w-6 h-6 flex items-center justify-center">🏠</div>
+                  <span className="text-[10px] font-bold">ホーム</span>
+                  <motion.div layoutId="nav-dot" className="w-1 h-1 rounded-full bg-sage" />
+                </button>
 
-            <button onClick={() => router.push("/notifications")} className="flex flex-col items-center gap-1 text-zinc-400">
-              <div className="w-6 h-6 flex items-center justify-center">🔔</div>
-              <span className="text-[10px] font-bold">通知</span>
-            </button>
-            
-            <button onClick={() => router.push("/profile")} className="flex flex-col items-center gap-1 text-zinc-400">
-              <div className="w-6 h-6 flex items-center justify-center">👤</div>
-              <span className="text-[10px] font-bold">自分</span>
-            </button>
+                <button onClick={() => router.push("/areas")} className="flex flex-col items-center gap-1 text-zinc-400 hover:text-sage transition-all">
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    <Map size={20} />
+                  </div>
+                  <span className="text-[10px] font-bold">エリア</span>
+                </button>
+                
+                <button 
+                  onClick={() => setIsModalOpen(true)} 
+                  className="flex flex-col items-center gap-1 text-zinc-400 hover:text-sage transition-all"
+                >
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    <PawPrint size={20} fill="currentColor" className="-rotate-[45deg]" />
+                  </div>
+                  <span className="text-[10px] font-bold">投稿</span>
+                </button>
+
+                <button onClick={() => router.push("/notifications")} className="flex flex-col items-center gap-1 text-zinc-400">
+                  <div className="w-6 h-6 flex items-center justify-center">🔔</div>
+                  <span className="text-[10px] font-bold">通知</span>
+                </button>
+                
+                <button onClick={() => router.push("/profile")} className="flex flex-col items-center gap-1 text-zinc-400">
+                  <div className="w-6 h-6 flex items-center justify-center">👤</div>
+                  <span className="text-[10px] font-bold">自分</span>
+                </button>
+            </div>
         </nav>
 
         <AnimatePresence>
