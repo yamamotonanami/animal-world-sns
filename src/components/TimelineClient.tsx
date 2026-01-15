@@ -6,7 +6,7 @@ import { Heart, Sparkles, Coffee, X, Award, Megaphone, PawPrint, Map } from "luc
 import { motion, AnimatePresence } from "framer-motion";
 import { ANIMAL_DATA, AnimalType, AREAS_CONFIG } from "@/lib/constants";
 import { UserData } from "@/lib/titles";
-import { createPost, toggleReaction } from "@/app/actions/post";
+import { createPost, toggleReaction, translatePostContent } from "@/app/actions/post";
 import { updateLastArea } from "@/app/actions/user";
 
 interface TimelineClientProps {
@@ -52,16 +52,18 @@ export default function TimelineClient({
   const [translatedResult, setTranslatedResult] = useState("");
   const [newTitles, setNewTitles] = useState<{ id: string, name: string }[]>([]);
 
-  const handleTranslate = () => {
+  const handleTranslate = async () => {
     if (!inputValue.trim()) return;
     setIsTranslating(true);
-    setTimeout(() => {
-      const animalType = user?.animal_types?.sub_type || "dog";
-      const animalName = ANIMAL_DATA[animalType as AnimalType]?.name || "動物";
-      const phrases = [`${animalName}らしく佇んでいる。`, `${animalName}の言葉で風に想いを乗せた。`, `小さな${animalName}の心臓が高鳴っている。`];
-      setTranslatedResult(`「${phrases[Math.floor(Math.random() * phrases.length)]}」`);
+    try {
+      const result = await translatePostContent(inputValue, spaceType);
+      setTranslatedResult(result);
+    } catch (e) {
+      console.error("Translation error:", e);
+      alert("翻訳に失敗しました。時間をおいて再度お試しください。");
+    } finally {
       setIsTranslating(false);
-    }, 1500);
+    }
   };
 
   const handlePostSubmit = async () => {

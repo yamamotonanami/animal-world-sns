@@ -3,6 +3,36 @@
 import { auth } from '@clerk/nextjs/server'
 import { createServiceRoleClient } from '@/lib/supabase/service-role'
 import { revalidatePath } from 'next/cache'
+import { generateFinalPrompt } from '@/lib/ai/prompts'
+import { translateWithAI } from '@/lib/ai/gemini'
+
+/**
+ * 投稿前のAI翻訳を実行する
+ */
+export async function translatePostContent(content: string, areaId: string) {
+  const { userId } = await auth()
+  if (!userId) throw new Error('Unauthorized')
+
+  const supabase = createServiceRoleClient()
+
+  // 1. ユーザーの動物タイプを取得
+  const { data: user } = await supabase
+    .from('users')
+    .select('*, animal_types(sub_type)')
+    .eq('clerk_id', userId)
+    .single()
+
+  if (!user || !user.animal_types) throw new Error('User animal type not found')
+
+  // 2. プロンプト生成
+  const prompt = await generateFinalPrompt(content, user.animal_types.sub_type, areaId)
+
+  // 3. AI翻訳実行
+  const translated = await translateWithAI(prompt)
+
+  // 括弧などの記号を除去して返す
+  return translated.replace(/[「」『』]/g, "").trim()
+}
 
 /**
  * 新しい投稿を作成し、カウントを更新して称号をチェックする
