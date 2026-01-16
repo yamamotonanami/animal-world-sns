@@ -2,7 +2,7 @@ import { clerkMiddleware } from '@clerk/nextjs/server'
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export default clerkMiddleware(async (auth, request: NextRequest) => {
+export const proxy = clerkMiddleware(async (auth, request: NextRequest) => {
   let supabaseResponse = NextResponse.next({
     request,
   })
