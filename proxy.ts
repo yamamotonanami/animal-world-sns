@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 /**
  * Next.js 16 の proxy エントリーポイント。
- * `src/proxy.ts` に配置し、`proxy` をエクスポートします。
+ * プロジェクトルートの `proxy.ts` に配置し、`proxy` をエクスポートします。
  */
 export const proxy = clerkMiddleware(async (auth, request: NextRequest) => {
   let supabaseResponse = NextResponse.next({
