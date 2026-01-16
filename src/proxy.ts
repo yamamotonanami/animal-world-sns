@@ -3,8 +3,8 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 /**
- * Next.js 16 では middleware.ts が proxy.ts に名称変更されました。
- * エクスポート名は 'proxy' が推奨されています。
+ * Next.js 16 の proxy エントリーポイント。
+ * `src/proxy.ts` に配置し、`proxy` をエクスポートします。
  */
 export const proxy = clerkMiddleware(async (auth, request: NextRequest) => {
   let supabaseResponse = NextResponse.next({
@@ -60,5 +60,5 @@ export const config = {
   ],
 }
 
-// 下位互換性および一部のツール向けに default export も保持
+// Next.js の期待する default export も用意
 export default proxy
