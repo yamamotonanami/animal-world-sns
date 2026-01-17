@@ -3,10 +3,10 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 /**
- * Next.js 16 の proxy エントリーポイント。
- * プロジェクトルートの `proxy.ts` に配置し、`proxy` をエクスポートします。
+ * Next.js の middleware エントリーポイント。
+ * `src/middleware.ts` に配置し、`middleware` をエクスポートします。
  */
-export const proxy = clerkMiddleware(async (auth, request: NextRequest) => {
+export const middleware = clerkMiddleware(async (auth, request: NextRequest) => {
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -61,4 +61,4 @@ export const config = {
 }
 
 // Next.js の期待する default export も用意
-export default proxy
+export default middleware
