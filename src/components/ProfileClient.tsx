@@ -58,8 +58,12 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
 
       <div className="p-6 space-y-8">
         <div className="flex flex-col items-center text-center space-y-4">
-          <div className="w-32 h-32 rounded-full bg-sage/5 border-2 border-sage/20 flex items-center justify-center text-6xl shadow-inner">
-            {animalInfo.emoji}
+          <div className="w-32 h-32 rounded-full bg-sage/5 border-2 border-sage/20 flex items-center justify-center shadow-inner overflow-hidden">
+            <img 
+              src={animalInfo.iconUrl} 
+              alt={animalInfo.name}
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="space-y-1">
             <div className="inline-flex items-center gap-1 px-3 py-1 bg-mustard/10 text-mustard text-xs font-bold rounded-full border border-mustard/20">

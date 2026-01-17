@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Sparkles, Map, MessageSquare, Award, ArrowRight, LogOut } from "lucide-react";
 import { useRef } from "react";
 import { useClerk } from "@clerk/nextjs";
+import { ANIMAL_DATA } from "@/lib/constants";
 
 export default function LandingPage({ user }: { user: any }) {
   const router = useRouter();
@@ -71,12 +72,12 @@ export default function LandingPage({ user }: { user: any }) {
                         damping: 20,
                         delay: 0.6
                       }}
-                      className="absolute left-4 top-[2.8rem] z-20"
+                      className="absolute left-4 top-[2.8rem] z-20 w-16 h-16 rounded-2xl overflow-hidden shadow-xl"
                     >
                       <img 
-                        src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Beaver.png" 
+                        src={ANIMAL_DATA.beaver.iconUrl} 
                         alt="Beaver Character"
-                        className="w-16 h-16 drop-shadow-xl"
+                        className="w-full h-full object-cover"
                       />
                     </motion.div>
 

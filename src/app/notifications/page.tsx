@@ -135,9 +135,17 @@ export default function NotificationsPage() {
             <div className="flex gap-3">
               <button 
                 onClick={() => router.push(`/profile/${notification.userId}`)}
-                className="w-10 h-10 rounded-full bg-sage/5 flex items-center justify-center text-xl shrink-0 hover:bg-sage/10 transition-all cursor-pointer"
+                className="w-10 h-10 rounded-full bg-sage/5 flex items-center justify-center overflow-hidden shrink-0 hover:bg-sage/10 transition-all cursor-pointer"
               >
-                {ANIMAL_DATA[notification.userAnimal as AnimalType]?.emoji}
+                {ANIMAL_DATA[notification.userAnimal as AnimalType] ? (
+                  <img 
+                    src={ANIMAL_DATA[notification.userAnimal as AnimalType].iconUrl} 
+                    alt={notification.userAnimal}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-xl">🐾</span>
+                )}
               </button>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-1">

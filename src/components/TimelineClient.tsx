@@ -80,8 +80,9 @@ export default function TimelineClient({
             ...newPost,
             userId: user.id,
             nickname: user.nickname,
-            title: user.titles?.name || "ふわふわの新参者",
-            animalType: user.animal_types?.sub_type || "dog",
+            title: (Array.isArray(user.titles) ? user.titles[0]?.name : user.titles?.name) || "ふわふわの新参者",
+            // 修正：user.animal_typesが配列の場合とオブジェクトの場合の両方に対応しつつ、デフォルト値も設定
+            animalType: (Array.isArray(user.animal_types) ? user.animal_types[0]?.sub_type : user.animal_types?.sub_type) || "dog",
             translatedContent: cleanedTranslated,
             reactions: { tail: { count: 0, active: false }, groom: { count: 0, active: false }, stretch: { count: 0, active: false } }
         };
@@ -158,8 +159,16 @@ export default function TimelineClient({
                     ) : (
                       <div key={post.id} className="bg-white/85 backdrop-blur-sm rounded-3xl p-4 shadow-sm border border-sage/5 transition-all hover:shadow-md">
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center text-xl">
-                            {ANIMAL_DATA[post.animalType as AnimalType]?.emoji || "🐾"}
+                          <div className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center overflow-hidden">
+                            {ANIMAL_DATA[post.animalType as AnimalType] ? (
+                              <img 
+                                src={ANIMAL_DATA[post.animalType as AnimalType].iconUrl} 
+                                alt={post.animalType}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-xl">🐾</span>
+                            )}
                           </div>
                           <div>
                             <div className="flex items-center gap-2">

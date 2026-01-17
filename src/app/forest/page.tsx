@@ -43,7 +43,7 @@ export default async function Page() {
       userId: post.users.id,
       nickname: post.users.nickname,
       title: post.users.titles?.name || "No Title",
-      animalType: post.users.animal_types?.id,
+      animalType: post.users.animal_types?.sub_type || "dog",
       translatedContent: post.translated_content,
       originalContent: post.user_id === user.id ? post.original_content : null,
       spaceType: post.space_type,

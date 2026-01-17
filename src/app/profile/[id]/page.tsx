@@ -55,9 +55,13 @@ export default function OtherProfilePage() {
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="w-32 h-32 rounded-full bg-sage/5 border-2 border-sage/20 flex items-center justify-center text-6xl shadow-inner"
+            className="w-32 h-32 rounded-full bg-sage/5 border-2 border-sage/20 flex items-center justify-center shadow-inner overflow-hidden"
           >
-            {animalInfo.emoji}
+            <img 
+              src={animalInfo.iconUrl} 
+              alt={animalInfo.name}
+              className="w-full h-full object-cover"
+            />
           </motion.div>
           <div className="space-y-1">
             <div className="inline-flex items-center gap-1 px-3 py-1 bg-mustard/10 text-mustard text-xs font-bold rounded-full border border-mustard/20">

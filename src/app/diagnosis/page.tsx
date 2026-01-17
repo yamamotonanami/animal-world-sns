@@ -207,7 +207,7 @@ export default function DiagnosisPage() {
                   className="absolute -bottom-4 -right-2 z-20"
                 >
                   <img 
-                    src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Beaver.png" 
+                    src={ANIMAL_RESULTS.beaver.iconUrl} 
                     alt="Beaver Clerk"
                     className="w-20 h-20 drop-shadow-xl"
                   />
@@ -289,7 +289,13 @@ export default function DiagnosisPage() {
               </div>
               
               <div className="relative inline-block py-4">
-                <div className="text-8xl relative z-10">{ANIMAL_RESULTS[result as keyof typeof ANIMAL_RESULTS].emoji}</div>
+                <div className="relative z-10 w-32 h-32 rounded-full overflow-hidden mx-auto drop-shadow-2xl">
+                  <img 
+                    src={ANIMAL_RESULTS[result as keyof typeof ANIMAL_RESULTS].iconUrl} 
+                    alt={ANIMAL_RESULTS[result as keyof typeof ANIMAL_RESULTS].name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <motion.div 
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -377,7 +383,9 @@ export default function DiagnosisPage() {
                       : "border-zinc-50 bg-white hover:border-sage/20 shadow-sm"
                   }`}
                 >
-                  <span className="text-4xl">{animal.emoji}</span>
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden drop-shadow-lg">
+                    <img src={animal.iconUrl} alt={animal.name} className="w-full h-full object-cover" />
+                  </div>
                   <span className="font-bold text-[11px] text-zinc-600 uppercase tracking-tighter">{animal.name}</span>
                 </button>
               ))}
@@ -478,8 +486,12 @@ export default function DiagnosisPage() {
               <div className="flex-1 p-8 flex flex-col items-center justify-center gap-8 relative">
                 {/* 決定した姿を鮮やかに表示 */}
                 <div className="relative">
-                  <div className="w-28 h-28 rounded-full bg-sage/5 flex items-center justify-center text-6xl shadow-inner relative z-10">
-                    {ANIMAL_RESULTS[result as keyof typeof ANIMAL_RESULTS]?.emoji}
+                  <div className="w-28 h-28 rounded-full bg-sage/5 flex items-center justify-center shadow-inner relative z-10 overflow-hidden">
+                    <img 
+                      src={ANIMAL_RESULTS[result as keyof typeof ANIMAL_RESULTS]?.iconUrl} 
+                      alt={ANIMAL_RESULTS[result as keyof typeof ANIMAL_RESULTS]?.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <motion.div 
                     animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
@@ -565,9 +577,15 @@ export default function DiagnosisPage() {
                 <motion.div
                   animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
                   transition={{ duration: 3, repeat: Infinity }}
-                  className="text-8xl"
+                  className="flex justify-center"
                 >
-                  {ANIMAL_RESULTS[result as keyof typeof ANIMAL_RESULTS].emoji}
+                  <div className="w-32 h-32 rounded-full overflow-hidden shadow-2xl">
+                    <img 
+                      src={ANIMAL_RESULTS[result as keyof typeof ANIMAL_RESULTS].iconUrl} 
+                      alt={ANIMAL_RESULTS[result as keyof typeof ANIMAL_RESULTS].name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </motion.div>
                 <div className="space-y-1">
                   <p className="text-sage font-bold text-sm tracking-widest">{selectedTitle}</p>

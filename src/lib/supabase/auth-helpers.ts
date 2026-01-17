@@ -26,7 +26,11 @@ export async function ensureSupabaseUser() {
       },
       { onConflict: 'clerk_id' }
     )
-    .select()
+    .select(`
+      *,
+      animal_types(id, name, sub_type),
+      titles(id, name, code)
+    `)
     .single()
 
   if (error) {
