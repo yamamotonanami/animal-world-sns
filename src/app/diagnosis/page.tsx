@@ -315,28 +315,6 @@ export default function DiagnosisPage() {
               </div>
             </div>
 
-            <div className="p-6 bg-[#9BC385]/5 rounded-[24px] border border-[#9BC385]/10 space-y-4 text-left">
-              <p className="text-[9px] text-[#9BC385] font-black uppercase tracking-[0.2em] border-b border-[#9BC385]/10 pb-2 flex items-center gap-2">
-                <Award size={12} /> Select Initial Title
-              </p>
-              <div className="grid grid-cols-1 gap-2">
-                {INITIAL_TITLES.map((title) => (
-                  <button
-                    key={title.id}
-                    onClick={() => setSelectedTitle(title.name)}
-                    className={`p-3 rounded-xl text-xs font-bold transition-all border flex items-center justify-between ${
-                      selectedTitle === title.name
-                        ? "bg-white border-[#9BC385] text-[#9BC385] shadow-md"
-                        : "bg-transparent border-transparent text-[#B2805E]/40 hover:text-[#B2805E]/60"
-                    }`}
-                  >
-                    <span>{title.name}</span>
-                    {selectedTitle === title.name && <div className="w-1.5 h-1.5 rounded-full bg-[#9BC385]" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <div className="flex flex-col gap-3">
               <button
                 onClick={handleFinishDiagnosis}
@@ -405,58 +383,70 @@ export default function DiagnosisPage() {
             key="name-input"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative z-10 text-center space-y-8 w-full max-w-sm bg-white/80 backdrop-blur-md rounded-[32px] shadow-2xl border border-white/60 p-10"
+            className="relative z-10 w-full max-w-sm flex flex-col items-center"
           >
-            <div className="space-y-2 text-center">
-              <p className="text-[10px] font-black text-[#9BC385] uppercase tracking-widest">Final Step</p>
-              <h1 className="text-2xl font-black text-[#B2805E]">お名前の登録</h1>
-              <p className="text-[10px] text-[#B2805E]/40 font-bold uppercase tracking-tighter">Enter Your Resident Name</p>
+            <div className="relative w-full flex flex-col items-center mb-8">
+              <button onClick={() => setCurrentStep(QUESTIONS.length + 1)} className="absolute left-0 -top-12 flex items-center gap-2 text-[#B2805E] font-bold text-sm hover:opacity-70 transition-all bg-white/50 px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm border border-white/50">
+                <ArrowLeft size={18} />
+                <span>もどる</span>
+              </button>
+              <div className="space-y-2 text-center pt-8">
+                <div className="text-4xl drop-shadow-md pb-2">✍️</div>
+                <h1 className="text-3xl font-black text-[#B2805E]" style={{ textShadow: "2px 0 0 #FFF, -2px 0 0 #FFF, 0 2px 0 #FFF, 0 -2px 0 #FFF, 1.5px 1.5px 0 #FFF, -1.5px 1.5px 0 #FFF, 1.5px -1.5px 0 #FFF, -1.5px -1.5px 0 #FFF" }}>
+                  お名前の登録
+                </h1>
+                <p className="text-[10px] text-[#B2805E] font-bold uppercase tracking-tighter bg-white/40 px-3 py-1 rounded-full inline-block backdrop-blur-sm">
+                  Enter Your Resident Name
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-6">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={userName}
-                  onChange={(e) => {
-                    setUserName(e.target.value);
-                    if (nameError) setNameError(null);
-                  }}
-                  placeholder="なまえ"
-                  className={`w-full h-20 px-6 text-center text-3xl font-black bg-white/50 rounded-2xl border-2 transition-all focus:outline-none tracking-widest text-[#B2805E] placeholder:text-[#B2805E]/20 ${
-                    nameError ? "border-red-400" : "border-[#B2805E]/10 focus:border-[#9BC385]"
-                  }`}
-                  autoFocus
-                />
-                <div className="absolute top-0 left-0 p-3 opacity-10 text-[#B2805E]">
-                  < PenTool size={16} />
+            <div className="w-full bg-white/80 backdrop-blur-md rounded-[32px] shadow-2xl border border-white/60 p-10 text-center space-y-8">
+              <div className="space-y-6">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={userName}
+                    onChange={(e) => {
+                      setUserName(e.target.value);
+                      if (nameError) setNameError(null);
+                    }}
+                    placeholder="なまえ"
+                    className={`w-full h-20 px-6 text-center text-3xl font-black bg-white/50 rounded-2xl border-2 transition-all focus:outline-none tracking-widest text-[#B2805E] placeholder:text-[#B2805E]/20 ${
+                      nameError ? "border-red-400" : "border-[#B2805E]/10 focus:border-[#9BC385]"
+                    }`}
+                    autoFocus
+                  />
+                  <div className="absolute top-0 left-0 p-3 opacity-10 text-[#B2805E]">
+                    < PenTool size={16} />
+                  </div>
+                </div>
+                
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between px-2 text-[10px] font-black text-[#B2805E]/30 uppercase tracking-widest">
+                    <span>{selectedTitle}</span>
+                    <span>{userName.length} / 6</span>
+                  </div>
+                  <AnimatePresence>
+                    {nameError && (
+                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] text-red-400 font-bold uppercase">{nameError}</motion.p>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
               
-              <div className="flex flex-col gap-1">
-                <div className="flex justify-between px-2 text-[10px] font-black text-[#B2805E]/30 uppercase tracking-widest">
-                  <span>{selectedTitle}</span>
-                  <span>{userName.length} / 6</span>
-                </div>
-                <AnimatePresence>
-                  {nameError && (
-                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] text-red-400 font-bold uppercase">{nameError}</motion.p>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
-            
-            <p className="text-[9px] text-[#B2805E]/60 leading-relaxed font-medium bg-white/50 p-4 rounded-xl border border-white">
-              ※ひらがな・カタカナ6文字以内で入力してください。この名前は市民名簿に登録され、動物たちの世界での公式な呼び名となります。
-            </p>
+              <p className="text-[9px] text-[#B2805E]/60 leading-relaxed font-medium bg-white/50 p-4 rounded-xl border border-white">
+                ※ひらがな・カタカナ6文字以内で入力してください。この名前は市民名簿に登録され、動物たちの世界での公式な呼び名となります。
+              </p>
 
-            <button
-              onClick={finishRegistration}
-              disabled={isRegistering}
-              className="w-full h-16 bg-[#9BC385] text-white rounded-2xl font-bold shadow-xl shadow-[#9BC385]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
-            >
-              {isRegistering ? "登録中..." : "登録を完了する"}
-            </button>
+              <button
+                onClick={finishRegistration}
+                disabled={isRegistering}
+                className="w-full h-16 bg-[#9BC385] text-white rounded-2xl font-bold shadow-xl shadow-[#9BC385]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+              >
+                {isRegistering ? "登録中..." : "登録を完了する"}
+              </button>
+            </div>
           </motion.div>
         )}
 
