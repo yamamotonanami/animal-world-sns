@@ -119,6 +119,18 @@ export async function toggleReaction(postId: string, reactionType: string) {
   } else {
     await supabase.from('reactions').insert({ post_id: postId, user_id: user.id, type: reactionType })
     active = true;
+
+    // 通知の作成
+    const { data: post } = await supabase.from('posts').select('user_id').eq('id', postId).single();
+    if (post && post.user_id !== user.id) {
+      await supabase.from('notifications').insert({
+        user_id: post.user_id,
+        sender_id: user.id,
+        type: 'reaction',
+        reaction_type: reactionType,
+        post_id: postId
+      });
+    }
   }
 
   // しぐさカウントの更新と称号チェック

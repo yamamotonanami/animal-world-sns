@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ChevronLeft, Heart, Sparkles, Coffee, MessageSquare, Map, PawPrint } from "lucide-react";
 import { ANIMAL_DATA, AnimalType, AREAS_CONFIG } from "@/lib/constants";
+import { fetchNotifications } from "@/app/actions/user";
 
 export default function NotificationsPage() {
   const router = useRouter();
@@ -12,32 +13,36 @@ export default function NotificationsPage() {
   const [user, setUser] = useState<{ name: string; animal: string; title: string } | null>(null);
 
   useEffect(() => {
-    // 1. 読んだ通知IDとカスタム通知を取得
-    const readIds = JSON.parse(localStorage.getItem("animal_sns_read_notification_ids") || "[]");
-    // カスタム通知のみを使用（モックデータ削除）
-    const customNotifications = JSON.parse(localStorage.getItem("animal_sns_custom_notifications") || "[]");
-    
-    // 2. 表示する通知の既読状態を更新
-    const updatedNotifications = customNotifications.map((n: any) => ({
-      ...n,
-      isRead: n.isRead || readIds.includes(n.id)
-    }));
-    setNotifications(updatedNotifications);
-
-    // 3. 画面を開いたらすべて既読にする
-    if (updatedNotifications.length > 0) {
-      const allIds = updatedNotifications.map((n: any) => n.id);
-      localStorage.setItem("animal_sns_read_notification_ids", JSON.stringify(allIds));
+    const loadNotifications = async () => {
+      // 1. DBから通知を取得
+      const dbNotifications = await fetchNotifications();
       
-      // 全体の通知バッジ用フラグも更新
-      localStorage.setItem("animal_sns_notifications_read", "true");
+      // 2. 既読IDを取得（ローカル）
+      const readIds = JSON.parse(localStorage.getItem("animal_sns_read_notification_ids") || "[]");
+      
+      // 3. 表示する通知の既読状態を更新
+      const updatedNotifications = dbNotifications.map((n: any) => ({
+        ...n,
+        isRead: n.isRead || readIds.includes(n.id)
+      }));
+      setNotifications(updatedNotifications);
 
-      // UI上の反映を1秒後に行う
-      const timer = setTimeout(() => {
-        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
+      // 4. 画面を開いたらすべて既読にする
+      if (updatedNotifications.length > 0) {
+        const allIds = updatedNotifications.map((n: any) => n.id);
+        localStorage.setItem("animal_sns_read_notification_ids", JSON.stringify(allIds));
+        
+        // 全体の通知バッジ用フラグも更新
+        localStorage.setItem("animal_sns_notifications_read", "true");
+
+        // UI上の反映を1秒後に行う
+        setTimeout(() => {
+          setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+        }, 1000);
+      }
+    };
+
+    loadNotifications();
   }, []);
 
   useEffect(() => {

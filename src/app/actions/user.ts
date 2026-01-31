@@ -72,6 +72,7 @@ export async function registerUser(nickname: string, animalTypeName: string, tit
       current_title_id: titleData?.id 
     })
     .eq('clerk_id', user.clerk_id)
+    
 
   if (updateError) {
     console.error('User update error:', updateError);
@@ -176,4 +177,39 @@ export async function getUserProfile() {
   }
 
   return user
+}
+
+/**
+ * 通知を取得する
+ */
+export async function fetchNotifications() {
+  const { userId } = await auth();
+  if (!userId) throw new Error('Unauthorized');
+
+  const supabase = createServiceRoleClient();
+  const { data: user } = await supabase.from('users').select('id').eq('clerk_id', userId).single();
+  
+  if (!user) return [];
+
+  const { data: notifications } = await supabase
+    .from('notifications')
+    .select(`
+      *,
+      posts ( translated_content )
+    `)
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
+
+  // データの整形
+  return notifications?.map((n: any) => ({
+    id: n.id,
+    type: n.type,
+    reactionType: n.reaction_type,
+    postContent: n.posts?.translated_content || "削除された投稿",
+    createdAt: n.created_at,
+    isRead: n.is_read,
+    userId: n.sender_id, // リンク用（ただし匿名なのでリンクさせないかも）
+    userNickname: "誰か",
+    userAnimal: "unknown"
+  })) || [];
 }
