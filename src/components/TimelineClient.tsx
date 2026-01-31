@@ -140,9 +140,15 @@ export default function TimelineClient({
       {/* オーバーレイ (LPのような少し白っぽいフィルタ) */}
       <div className="fixed inset-0 z-0 w-full max-w-[430px] left-1/2 -translate-x-1/2 pointer-events-none bg-sage/10 mix-blend-overlay" />
 
-      <div className="relative z-10 pt-[100px]">
-        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20 bg-white/80 backdrop-blur-md border-b border-white/60 px-6 py-2 shadow-sm flex items-center justify-center">
-          <img src="/logo/title_logo.png" alt="Animal World" className="h-16 w-auto object-contain drop-shadow-sm" />
+      <div className="relative z-10 pt-[80px]">
+        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20 bg-white/80 backdrop-blur-md border-b border-white/60 shadow-sm h-[60px] flex items-center justify-center">
+          <div className="relative w-full h-full flex items-center justify-center">
+            <img 
+              src="/logo/title_logo.png" 
+              alt="Animal World" 
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-18 w-auto object-contain drop-shadow-sm" 
+            />
+          </div>
         </header>
 
         <div className="flex flex-col gap-4 p-4">
