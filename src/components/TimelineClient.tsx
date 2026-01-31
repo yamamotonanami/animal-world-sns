@@ -205,49 +205,6 @@ export default function TimelineClient({
           ))}
         </div>
 
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/90 backdrop-blur-md border-t border-white/60 pt-3 pb-8 z-50 shadow-[0_-5px_20px_rgba(178,128,94,0.1)]">
-            <div className="grid grid-cols-5 w-full px-2">
-                <button 
-                  onClick={() => {
-                    const lastArea = user?.last_area || 'town';
-                    const path = AREAS_CONFIG[lastArea as keyof typeof AREAS_CONFIG]?.path || '/';
-                    router.push(path);
-                  }} 
-                  className="flex flex-col items-center gap-1 text-sage font-bold"
-                >
-                  <div className="w-6 h-6 flex items-center justify-center">🏠</div>
-                  <span className="text-[10px] font-bold">ホーム</span>
-                  <motion.div layoutId="nav-dot" className="w-1.5 h-1.5 rounded-full bg-sage mt-1" />
-                </button>
-
-                <button onClick={() => router.push("/areas")} className="flex flex-col items-center gap-1 text-brown/40 hover:text-sage transition-all">
-                  <div className="w-6 h-6 flex items-center justify-center">
-                    <Map size={20} />
-                  </div>
-                  <span className="text-[10px] font-bold">エリア</span>
-                </button>
-                
-                <button 
-                  onClick={() => setIsModalOpen(true)} 
-                  className="flex flex-col items-center gap-1 text-brown/40 hover:text-sage transition-all"
-                >
-                  <div className="w-6 h-6 flex items-center justify-center">
-                    <PawPrint size={20} fill="currentColor" className="-rotate-[45deg]" />
-                  </div>
-                  <span className="text-[10px] font-bold">投稿</span>
-                </button>
-
-                <button onClick={() => router.push("/notifications")} className="flex flex-col items-center gap-1 text-brown/40 hover:text-sage transition-all">
-                  <div className="w-6 h-6 flex items-center justify-center">🔔</div>
-                  <span className="text-[10px] font-bold">通知</span>
-                </button>
-                
-                <button onClick={() => router.push("/profile")} className="flex flex-col items-center gap-1 text-brown/40 hover:text-sage transition-all">
-                  <div className="w-6 h-6 flex items-center justify-center">👤</div>
-                  <span className="text-[10px] font-bold">自分</span>
-                </button>
-            </div>
-        </nav>
 
         <AnimatePresence>
             {isModalOpen && (
@@ -337,6 +294,50 @@ export default function TimelineClient({
           )}
         </AnimatePresence>
       </div>
+
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/90 backdrop-blur-md border-t border-white/60 pt-3 pb-8 z-50 shadow-[0_-5px_20px_rgba(178,128,94,0.1)]">
+        <div className="grid grid-cols-5 w-full px-2">
+            <button 
+              onClick={() => {
+                const lastArea = user?.last_area || 'town';
+                const path = AREAS_CONFIG[lastArea as keyof typeof AREAS_CONFIG]?.path || '/';
+                router.push(path);
+              }} 
+              className="flex flex-col items-center gap-1 text-sage font-bold"
+            >
+              <div className="w-6 h-6 flex items-center justify-center">🏠</div>
+              <span className="text-[10px] font-bold">ホーム</span>
+              <motion.div layoutId="nav-dot" className="w-1.5 h-1.5 rounded-full bg-sage mt-1" />
+            </button>
+
+            <button onClick={() => router.push("/areas")} className="flex flex-col items-center gap-1 text-brown/40 hover:text-sage transition-all">
+              <div className="w-6 h-6 flex items-center justify-center">
+                <Map size={20} />
+              </div>
+              <span className="text-[10px] font-bold">エリア</span>
+            </button>
+            
+            <button 
+              onClick={() => setIsModalOpen(true)} 
+              className="flex flex-col items-center gap-1 text-brown/40 hover:text-sage transition-all"
+            >
+              <div className="w-6 h-6 flex items-center justify-center">
+                <PawPrint size={20} fill="currentColor" className="-rotate-[45deg]" />
+              </div>
+              <span className="text-[10px] font-bold">投稿</span>
+            </button>
+
+            <button onClick={() => router.push("/notifications")} className="flex flex-col items-center gap-1 text-brown/40 hover:text-sage transition-all">
+              <div className="w-6 h-6 flex items-center justify-center">🔔</div>
+              <span className="text-[10px] font-bold">通知</span>
+            </button>
+            
+            <button onClick={() => router.push("/profile")} className="flex flex-col items-center gap-1 text-brown/40 hover:text-sage transition-all">
+              <div className="w-6 h-6 flex items-center justify-center">👤</div>
+              <span className="text-[10px] font-bold">自分</span>
+            </button>
+        </div>
+      </nav>
     </div>
   );
 }
