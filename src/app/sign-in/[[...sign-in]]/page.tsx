@@ -28,7 +28,7 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen bg-[#9BC385]/10 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[#9BC385]/10 flex flex-col items-center justify-start pt-20 p-4 relative overflow-hidden">
       {/* 背景画像 */}
       <div 
         className="absolute inset-0 z-0"
@@ -42,15 +42,19 @@ export default function Page() {
       <div className="relative z-10 w-full max-w-[400px] flex flex-col items-center">
         <div className="w-full space-y-8">
           {/* ヘッダー */}
-          <div className="flex flex-col items-center gap-4">
-            <Link href="/" className="self-start flex items-center gap-2 text-[#B2805E] font-bold text-sm hover:opacity-70 transition-all bg-white/50 px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm border border-white/50">
+          <div className="relative w-full flex flex-col items-center mb-24">
+            <Link href="/" className="absolute left-0 -top-12 flex items-center gap-2 text-[#B2805E] font-bold text-sm hover:opacity-70 transition-all bg-white/50 px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm border border-white/50">
               <ArrowLeft size={18} />
               <span>もどる</span>
             </Link>
-            <div className="text-center space-y-2">
-              <div className="text-4xl drop-shadow-sm">🏠</div>
-              <h1 className="text-2xl font-black text-[#B2805E] tracking-tighter drop-shadow-sm">すみかに入る</h1>
-              <p className="text-[10px] text-[#B2805E]/60 font-bold uppercase tracking-widest">Sign In to Habitat</p>
+            <div className="text-center space-y-2 pt-12">
+              <div className="text-4xl drop-shadow-md">🏠</div>
+              <h1 className="text-3xl font-black text-[#B2805E] tracking-tighter drop-shadow-sm" style={{ textShadow: "2px 0 0 #FFF, -2px 0 0 #FFF, 0 2px 0 #FFF, 0 -2px 0 #FFF, 1.5px 1.5px 0 #FFF, -1.5px 1.5px 0 #FFF, 1.5px -1.5px 0 #FFF, -1.5px -1.5px 0 #FFF" }}>
+                すみかに入る
+              </h1>
+              <p className="text-[12px] text-[#B2805E] font-black uppercase tracking-widest bg-white/40 px-3 py-1 rounded-full inline-block backdrop-blur-sm">
+                Sign In to Habitat
+              </p>
             </div>
           </div>
 
