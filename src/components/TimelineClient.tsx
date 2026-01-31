@@ -127,7 +127,7 @@ export default function TimelineClient({
   };
 
   return (
-    <div className="pb-32 min-h-screen relative text-zinc-800">
+    <div className="pb-32 min-h-screen relative text-brown">
       {/* 背景レイヤーを absolute から fixed に変更し、枠内に固定 */}
       <div 
         className="fixed inset-0 z-0 w-full max-w-[430px] left-1/2 -translate-x-1/2 pointer-events-none" 
@@ -137,14 +137,14 @@ export default function TimelineClient({
         }} 
       />
 
-      <div className="relative z-10 pt-[80px]">
-        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20 bg-white border-b border-sage/10 px-6 py-4">
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-end">
-              <div>
-                <h1 className="text-xl font-bold text-sage">{headerTitle}</h1>
-                <p className="text-xs text-zinc-400">{headerDesc}</p>
-              </div>
+      {/* オーバーレイ (LPのような少し白っぽいフィルタ) */}
+      <div className="fixed inset-0 z-0 w-full max-w-[430px] left-1/2 -translate-x-1/2 pointer-events-none bg-sage/10 mix-blend-overlay" />
+
+      <div className="relative z-10 pt-[100px]">
+        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20 bg-white/80 backdrop-blur-md border-b border-white/60 px-4 py-3 shadow-sm flex items-center">
+          <div className="w-full">
+            <div className="flex justify-start items-center">
+              <img src="/logo/title_logo.png" alt="Animal World" className="h-16 w-auto object-contain drop-shadow-sm" />
             </div>
           </div>
         </header>
@@ -152,14 +152,14 @@ export default function TimelineClient({
         <div className="flex flex-col gap-4 p-4">
           {posts.map((post: any) => (
             post.isSystem ? (
-              <div key={post.id} className="bg-white/95 backdrop-blur-md rounded-2xl p-4 border border-sage/20 shadow-sm flex items-center gap-3">
+              <div key={post.id} className="bg-white/90 backdrop-blur-md rounded-2xl p-4 border border-sage/20 shadow-sm flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-sage/10 flex items-center justify-center text-sage"><Megaphone size={16} /></div>
                 <p className="text-xs text-sage font-bold leading-relaxed">{post.content}</p>
               </div>
                     ) : (
-                      <div key={post.id} className="bg-white/85 backdrop-blur-sm rounded-3xl p-4 shadow-sm border border-sage/5 transition-all hover:shadow-md">
+                      <div key={post.id} className="bg-white/80 backdrop-blur-md rounded-3xl p-4 shadow-sm border border-white/60 transition-all hover:shadow-md hover:border-sage/20">
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center overflow-hidden">
+                          <div className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
                             {ANIMAL_DATA[post.animalType as AnimalType] ? (
                               <img 
                                 src={ANIMAL_DATA[post.animalType as AnimalType].iconUrl} 
@@ -172,18 +172,18 @@ export default function TimelineClient({
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="text-[10px] bg-sage/10 text-sage px-2 py-0.5 rounded-full">{post.title}</span>
+                              <span className="text-[10px] bg-sage/10 text-sage px-2 py-0.5 rounded-full font-bold border border-sage/10">{post.title}</span>
                             </div>
-                            <h3 className="font-bold text-zinc-800 text-sm">{post.nickname}</h3>
+                            <h3 className="font-bold text-brown text-sm">{post.nickname}</h3>
                           </div>
                         </div>
-                        <p className="text-zinc-700 leading-relaxed mb-3 text-sm">{post.translatedContent}</p>
-                        <div className="flex gap-6 items-center border-t border-sage/5 pt-3">
+                        <p className="text-brown/90 leading-relaxed mb-3 text-sm font-medium">{post.translatedContent}</p>
+                        <div className="flex gap-6 items-center border-t border-brown/5 pt-3">
                   {["tail", "groom", "stretch"].map((type) => (
                       <button 
                         key={type}
                         onClick={() => handleToggleReaction(post.id, type as any)}
-                        className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions[type].active ? "text-sage font-bold drop-shadow-[0_0_8px_rgba(167,183,151,0.5)]" : "text-zinc-300 hover:text-sage"}`}
+                        className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions[type].active ? "text-mustard font-bold drop-shadow-[0_0_8px_rgba(231,169,80,0.5)]" : "text-brown/40 hover:text-mustard"}`}
                       >
                         {type === "tail" && <Heart size={18} fill={post.reactions[type].active ? "currentColor" : "none"} />}
                         {type === "groom" && <Sparkles size={18} />}
@@ -199,7 +199,7 @@ export default function TimelineClient({
           ))}
         </div>
 
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-sage/10 pt-3 pb-8 z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/90 backdrop-blur-md border-t border-white/60 pt-3 pb-8 z-20 shadow-[0_-5px_20px_rgba(178,128,94,0.1)]">
             <div className="grid grid-cols-5 w-full px-2">
                 <button 
                   onClick={() => {
@@ -211,10 +211,10 @@ export default function TimelineClient({
                 >
                   <div className="w-6 h-6 flex items-center justify-center">🏠</div>
                   <span className="text-[10px] font-bold">ホーム</span>
-                  <motion.div layoutId="nav-dot" className="w-1 h-1 rounded-full bg-sage" />
+                  <motion.div layoutId="nav-dot" className="w-1.5 h-1.5 rounded-full bg-sage mt-1" />
                 </button>
 
-                <button onClick={() => router.push("/areas")} className="flex flex-col items-center gap-1 text-zinc-400 hover:text-sage transition-all">
+                <button onClick={() => router.push("/areas")} className="flex flex-col items-center gap-1 text-brown/40 hover:text-sage transition-all">
                   <div className="w-6 h-6 flex items-center justify-center">
                     <Map size={20} />
                   </div>
@@ -223,7 +223,7 @@ export default function TimelineClient({
                 
                 <button 
                   onClick={() => setIsModalOpen(true)} 
-                  className="flex flex-col items-center gap-1 text-zinc-400 hover:text-sage transition-all"
+                  className="flex flex-col items-center gap-1 text-brown/40 hover:text-sage transition-all"
                 >
                   <div className="w-6 h-6 flex items-center justify-center">
                     <PawPrint size={20} fill="currentColor" className="-rotate-[45deg]" />
@@ -231,12 +231,12 @@ export default function TimelineClient({
                   <span className="text-[10px] font-bold">投稿</span>
                 </button>
 
-                <button onClick={() => router.push("/notifications")} className="flex flex-col items-center gap-1 text-zinc-400">
+                <button onClick={() => router.push("/notifications")} className="flex flex-col items-center gap-1 text-brown/40 hover:text-sage transition-all">
                   <div className="w-6 h-6 flex items-center justify-center">🔔</div>
                   <span className="text-[10px] font-bold">通知</span>
                 </button>
                 
-                <button onClick={() => router.push("/profile")} className="flex flex-col items-center gap-1 text-zinc-400">
+                <button onClick={() => router.push("/profile")} className="flex flex-col items-center gap-1 text-brown/40 hover:text-sage transition-all">
                   <div className="w-6 h-6 flex items-center justify-center">👤</div>
                   <span className="text-[10px] font-bold">自分</span>
                 </button>
@@ -246,7 +246,7 @@ export default function TimelineClient({
         <AnimatePresence>
             {isModalOpen && (
                 <>
-                  {/* 背景オーバーレイ：SPサイズ（430px）の枠内のみに適用 */}
+                  {/* 背景オーバーレイ */}
                   <motion.div 
                     initial={{ opacity: 0 }} 
                     animate={{ opacity: 1 }} 
@@ -254,7 +254,7 @@ export default function TimelineClient({
                     onClick={() => setIsModalOpen(false)} 
                     className="fixed inset-0 z-30 flex justify-center"
                   >
-                    <div className="w-full max-w-[430px] h-full bg-sage/20 backdrop-blur-sm" />
+                    <div className="w-full max-w-[430px] h-full bg-brown/20 backdrop-blur-sm" />
                   </motion.div>
 
                   {/* モーダル本体 */}
@@ -263,23 +263,28 @@ export default function TimelineClient({
                     animate={{ y: 0 }} 
                     exit={{ y: "100%" }} 
                     transition={{ type: "spring", damping: 25, stiffness: 200 }} 
-                    className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white rounded-t-[40px] p-8 pb-12 z-40 shadow-2xl border-t border-sage/10"
+                    className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/95 backdrop-blur-xl rounded-t-[40px] p-8 pb-12 z-40 shadow-2xl border-t border-white/50"
                   >
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-lg font-bold text-zinc-800">{postingUI.modalTitle}</h2>
-                        <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-zinc-100 rounded-full"><X className="text-zinc-400" size={24} /></button>
+                        <h2 className="text-lg font-black text-brown">{postingUI.modalTitle}</h2>
+                        <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-brown/5 rounded-full"><X className="text-brown/40" size={24} /></button>
                     </div>
                     {!translatedResult ? (
                         <div className="flex flex-col gap-4">
-                            <textarea value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder={postingUI.inputPlaceholder} className="w-full h-32 p-4 rounded-2xl bg-zinc-50 border-none focus:ring-2 focus:ring-sage/20 resize-none" />
-                            <button onClick={handleTranslate} disabled={!inputValue.trim() || isTranslating} className={`h-14 rounded-full font-bold transition-all ${isTranslating ? "bg-zinc-100 text-zinc-400" : "bg-sage text-white shadow-lg shadow-sage/30"}`}>{isTranslating ? postingUI.translatingText : "翻訳する"}</button>
+                            <textarea 
+                              value={inputValue} 
+                              onChange={(e) => setInputValue(e.target.value)} 
+                              placeholder={postingUI.inputPlaceholder} 
+                              className="w-full h-32 p-4 rounded-2xl bg-white border border-brown/10 focus:border-sage focus:ring-2 focus:ring-sage/20 resize-none text-brown placeholder:text-brown/30 font-medium" 
+                            />
+                            <button onClick={handleTranslate} disabled={!inputValue.trim() || isTranslating} className={`h-14 rounded-full font-bold transition-all ${isTranslating ? "bg-brown/10 text-brown/40" : "bg-sage text-white shadow-lg shadow-sage/30 hover:scale-[1.02] active:scale-95"}`}>{isTranslating ? postingUI.translatingText : "翻訳する"}</button>
                         </div>
                     ) : (
                         <div className="flex flex-col gap-6">
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-6 rounded-2xl bg-sage/5 border border-sage/10 text-center"><p className="text-sage font-medium text-lg italic">{translatedResult}</p></motion.div>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-6 rounded-2xl bg-sage/5 border border-sage/10 text-center"><p className="text-sage font-bold text-lg italic">{translatedResult}</p></motion.div>
                             <div className="flex gap-3">
-                                <button onClick={() => setTranslatedResult("")} className="flex-1 h-14 rounded-full font-bold text-zinc-400 bg-zinc-50">やり直す</button>
-                                <button onClick={handlePostSubmit} className="flex-[2] h-14 rounded-full font-bold text-white bg-sage shadow-lg shadow-sage/30">{postingUI.submitButton}</button>
+                                <button onClick={() => setTranslatedResult("")} className="flex-1 h-14 rounded-full font-bold text-brown/60 bg-white border border-brown/10 hover:bg-brown/5">やり直す</button>
+                                <button onClick={handlePostSubmit} className="flex-[2] h-14 rounded-full font-bold text-white bg-sage shadow-lg shadow-sage/30 hover:scale-[1.02] active:scale-95">{postingUI.submitButton}</button>
                             </div>
                         </div>
                     )}
@@ -298,13 +303,13 @@ export default function TimelineClient({
             >
               {/* 背景オーバーレイ */}
               <div className="absolute inset-0 flex justify-center pointer-events-none">
-                <div className="w-full max-w-[430px] h-full bg-sage/20 backdrop-blur-md" />
+                <div className="w-full max-w-[430px] h-full bg-brown/20 backdrop-blur-md" />
               </div>
               
               <div className="relative bg-white rounded-[40px] p-8 shadow-2xl border border-sage/10 max-w-[320px] w-full text-center space-y-6 z-10">
                 <div className="w-20 h-20 bg-mustard/10 rounded-full flex items-center justify-center text-4xl mx-auto border-2 border-mustard/20">✨</div>
                 <div className="space-y-2">
-                  <h2 className="text-xl font-bold text-zinc-800">新しい称号を獲得！</h2>
+                  <h2 className="text-xl font-black text-brown">新しい称号を獲得！</h2>
                   <div className="flex flex-col gap-2">
                     {newTitles.map(t => (
                       <div key={t.id} className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-mustard/10 text-mustard font-bold rounded-full border border-mustard/20">
@@ -313,8 +318,8 @@ export default function TimelineClient({
                     ))}
                   </div>
                 </div>
-                <p className="text-sm text-zinc-400">プロフィール画面から変更できるようになりました。</p>
-                <button onClick={() => setNewTitles([])} className="w-full h-14 bg-sage text-white rounded-full font-bold shadow-lg shadow-sage/30 active:scale-95 transition-all">うれしい！</button>
+                <p className="text-sm text-brown/60 font-medium">プロフィール画面から変更できるようになりました。</p>
+                <button onClick={() => setNewTitles([])} className="w-full h-14 bg-sage text-white rounded-full font-bold shadow-lg shadow-sage/30 active:scale-95 transition-all hover:bg-sage/90">うれしい！</button>
               </div>
             </motion.div>
           )}

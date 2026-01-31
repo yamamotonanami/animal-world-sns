@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --color-sage: #B2AC88;
-  --color-mustard: #E3B448;
+  --color-sage: #9BC385;
+  --color-mustard: #E7A950;
+  --color-brown: #B2805E;
   --color-offwhite: #F9F9F7;
   
   --font-maru: "Zen Maru Gothic", sans-serif;

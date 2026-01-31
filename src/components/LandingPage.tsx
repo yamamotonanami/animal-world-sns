@@ -150,13 +150,13 @@ export default function LandingPage({ user }: { user: any }) {
             <WalkingFootprints />
 
             {/* ロゴエリア（コンテナ） */}
-            <div className="relative w-full max-w-[340px] aspect-[4/3] flex items-center justify-center">
+            <div className="relative w-full max-w-[340px] min-h-[240px] flex items-center justify-center py-8">
               {/* ビーバーキャラクター */}
               <motion.div
                 initial={{ opacity: 0, scale: 0, x: -20, rotate: -20 }}
                 animate={{ opacity: 1, scale: 1, x: 0, rotate: -10 }}
                 transition={{ delay: 1.2, type: "spring", stiffness: 200 }}
-                className="absolute bottom-[15%] -left-[5%] w-[45%] z-20"
+                className="absolute bottom-[15%] -left-[5%] w-[40%] z-20"
               >
                 <img 
                   src="/logo/beaver_lp.png" 
@@ -178,7 +178,7 @@ export default function LandingPage({ user }: { user: any }) {
                   scale: { duration: 0.8, type: "spring" },
                   y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.8 }
                 }}
-                className="relative z-10 w-[90%] ml-auto"
+                className="relative z-10 w-[85%] mx-auto"
               >
                 <img 
                   src="/logo/title_logo.png" 
@@ -193,7 +193,7 @@ export default function LandingPage({ user }: { user: any }) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1, duration: 0.8 }}
-              className="relative z-10 -mt-8 pl-[20%] sm:pl-24 text-base sm:text-lg font-bold text-[#B2805E] tracking-wider text-center w-full leading-relaxed"
+              className="relative z-10 -mt-16 pl-[20%] sm:pl-24 text-base sm:text-lg font-bold text-[#B2805E] tracking-wider text-center w-full leading-relaxed"
               style={{ 
                 textShadow: "2px 2px 0px #ffffff, -2px -2px 0px #ffffff, -2px 2px 0px #ffffff, 2px -2px 0px #ffffff, 2px 0px 0px #ffffff, -2px 0px 0px #ffffff, 0px 2px 0px #ffffff, 0px -2px 0px #ffffff" 
               }}
