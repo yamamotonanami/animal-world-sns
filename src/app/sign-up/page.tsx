@@ -1,22 +1,22 @@
 "use client";
 
-import { useSignIn } from "@clerk/nextjs";
+import { useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function Page() {
-  const { isLoaded, signIn } = useSignIn();
+  const { isLoaded, signUp } = useSignUp();
   const router = useRouter();
   
   const [error, setError] = useState("");
 
   // Googleログイン
-  const signInWithGoogle = async () => {
+  const signUpWithGoogle = async () => {
     if (!isLoaded) return;
     try {
-      await signIn.authenticateWithRedirect({
+      await signUp.authenticateWithRedirect({
         strategy: "oauth_google",
         redirectUrl: "/sso-callback",
         redirectUrlComplete: "/diagnosis",
@@ -48,9 +48,9 @@ export default function Page() {
               <span>もどる</span>
             </Link>
             <div className="text-center space-y-2">
-              <div className="text-4xl drop-shadow-sm">🏠</div>
-              <h1 className="text-2xl font-black text-[#B2805E] tracking-tighter drop-shadow-sm">すみかに入る</h1>
-              <p className="text-[10px] text-[#B2805E]/60 font-bold uppercase tracking-widest">Sign In to Habitat</p>
+              <div className="text-4xl drop-shadow-sm">🎫</div>
+              <h1 className="text-2xl font-black text-[#B2805E] tracking-tighter drop-shadow-sm">住人登録</h1>
+              <p className="text-[10px] text-[#B2805E]/60 font-bold uppercase tracking-widest">Create Resident Account</p>
             </div>
           </div>
 
@@ -62,11 +62,11 @@ export default function Page() {
             <div className="space-y-6">
               {/* Googleログインボタン */}
               <button
-                onClick={signInWithGoogle}
+                onClick={signUpWithGoogle}
                 className="w-full bg-white border-2 border-[#E7A950]/20 hover:bg-[#E7A950]/5 text-[#B2805E] font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-all"
               >
                 <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-                Googleでログイン
+                Googleで登録
               </button>
 
               {error && (
@@ -74,8 +74,8 @@ export default function Page() {
               )}
 
               <div className="text-center">
-                <Link href="/sign-up" className="text-xs font-bold text-[#E7A950] hover:text-[#E7A950]/80">
-                  アカウントをお持ちでない方はこちら
+                <Link href="/sign-in" className="text-xs font-bold text-[#E7A950] hover:text-[#E7A950]/80">
+                  すでにアカウントをお持ちの方はこちら
                 </Link>
               </div>
             </div>

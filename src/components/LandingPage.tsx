@@ -126,8 +126,7 @@ export default function LandingPage({ user }: { user: any }) {
   const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
 
   const handleSignOut = async () => {
-    await signOut(() => router.push("/"));
-    router.refresh();
+    await signOut({ redirectUrl: "/" });
   };
 
   return (
@@ -150,14 +149,6 @@ export default function LandingPage({ user }: { user: any }) {
             {/* 足跡アニメーション */}
             <WalkingFootprints />
 
-            {/* 背景の光（グロー効果） */}
-            <motion.div  
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1.5 }}
-              className="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-white/60 blur-[60px] rounded-full z-0" 
-            />
-            
             {/* ロゴエリア（コンテナ） */}
             <div className="relative w-full max-w-[340px] aspect-[4/3] flex items-center justify-center">
               {/* ビーバーキャラクター */}
@@ -266,15 +257,6 @@ export default function LandingPage({ user }: { user: any }) {
                 </button>
               </div>
             )}
-          </motion.div>
-
-          <motion.div 
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-          >
-            <span className="text-[9px] font-bold text-[#9BC385] tracking-[0.3em] uppercase">Scroll Down</span>
-            <div className="w-[1px] h-12 bg-gradient-to-b from-[#9BC385] to-transparent" />
           </motion.div>
         </motion.div>
       </section>
