@@ -132,6 +132,54 @@ export async function updateUserTitle(titleName: string) {
 }
 
 /**
+ * ユーザーの動物タイプを更新する
+ */
+export async function updateUserAnimal(animalSubType: string) {
+  const { userId } = await auth()
+  if (!userId) throw new Error('Unauthorized')
+
+  const supabase = createServiceRoleClient()
+
+  // 1. 動物種別の解決（テーブルになければ作成）
+  const animalMap: Record<string, string> = {
+    dog: 'イヌ', cat: 'ネコ', rabbit: 'うさぎ', beaver: 'ビーバー'
+  };
+  const displayName = animalMap[animalSubType] || '動物';
+  
+  let { data: typeData } = await supabase
+    .from('animal_types')
+    .select('id')
+    .eq('name', displayName)
+    .maybeSingle();
+
+  if (!typeData) {
+    const { data: newType } = await supabase
+      .from('animal_types')
+      .insert({ name: displayName, sub_type: animalSubType })
+      .select('id')
+      .single();
+    typeData = newType;
+  }
+  
+  if (!typeData) throw new Error('Failed to resolve animal type');
+
+  // 2. ユーザー情報の更新
+  const { error } = await supabase
+    .from('users')
+    .update({ animal_type_id: typeData.id })
+    .eq('clerk_id', userId)
+
+  if (error) {
+    console.error('Update animal error:', error)
+    throw error
+  }
+
+  revalidatePath('/profile')
+  revalidatePath('/') // タイムラインのアイコンも変わる可能性があるため
+  return { success: true }
+}
+
+/**
  * ユーザーの最後に滞在したエリアを更新する
  */
 export async function updateLastArea(area: string) {

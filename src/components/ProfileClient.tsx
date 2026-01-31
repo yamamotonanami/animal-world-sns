@@ -7,7 +7,7 @@ import { ChevronLeft, Award, Settings, LogOut, RefreshCw, X, PawPrint, Map, Hear
 import { TITLES } from "@/lib/mock-data";
 import { ANIMAL_DATA, AnimalType, AREAS_CONFIG } from "@/lib/constants";
 import { UserData } from "@/lib/titles";
-import { updateUserTitle } from "@/app/actions/user";
+import { updateUserTitle, updateUserAnimal } from "@/app/actions/user";
 import { fetchUserPosts } from "@/app/actions/post";
 import { useClerk } from "@clerk/nextjs";
 
@@ -19,6 +19,9 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
   const [isUpdating, setIsUpdating] = useState(false);
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(false);
+  
+  // 動物変更モーダル用
+  const [isAnimalModalOpen, setIsAnimalModalOpen] = useState(false);
 
   const animalInfo = ANIMAL_DATA[user.animal as AnimalType] || ANIMAL_DATA.dog;
 
@@ -48,6 +51,22 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
     }
   };
 
+  const handleAnimalChange = async (animalType: AnimalType) => {
+    if (user.animal === animalType || isUpdating) return;
+    
+    setIsUpdating(true);
+    try {
+      await updateUserAnimal(animalType);
+      setUser({ ...user, animal: animalType });
+      setIsAnimalModalOpen(false);
+    } catch (e) {
+      console.error("Failed to update animal", e);
+      alert("動物の変更に失敗しました");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const handleSignOut = async () => {
     if (confirm("すみかを出て、入り口に戻りますか？")) {
       await signOut(() => router.push("/"));
@@ -72,12 +91,21 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
 
       <div className="pt-24 p-6 space-y-8">
         <div className="flex flex-col items-center text-center space-y-4">
-          <div className="w-32 h-32 rounded-full bg-sage/5 border-2 border-sage/20 flex items-center justify-center shadow-inner overflow-hidden">
-            <img 
-              src={animalInfo.iconUrl} 
-              alt={animalInfo.name}
-              className="w-full h-full object-cover"
-            />
+          <div className="relative">
+            <div className="w-32 h-32 rounded-full bg-sage/5 border-2 border-sage/20 flex items-center justify-center shadow-inner overflow-hidden">
+              <img 
+                src={animalInfo.iconUrl} 
+                alt={animalInfo.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <button 
+              onClick={() => setIsAnimalModalOpen(true)}
+              className="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full shadow-md border border-brown/10 flex items-center justify-center text-brown/60 hover:text-sage hover:scale-110 transition-all"
+              title="姿を変える"
+            >
+              <RefreshCw size={18} />
+            </button>
           </div>
           <div className="space-y-1">
             <div className="inline-flex items-center gap-1 px-3 py-1 bg-mustard/10 text-mustard text-xs font-bold rounded-full border border-mustard/20">
@@ -85,7 +113,6 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
               {user.title}
             </div>
             <h2 className="text-2xl font-bold">{user.name}</h2>
-            <p className="text-sm text-brown/60 font-medium">森の「{animalInfo.name}」さん</p>
           </div>
         </div>
 
@@ -246,6 +273,70 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
             </button>
         </div>
       </nav>
+
+      <AnimatePresence>
+        {isAnimalModalOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              onClick={() => setIsAnimalModalOpen(false)} 
+              className="fixed inset-0 z-30 flex justify-center bg-brown/20 backdrop-blur-sm"
+            />
+
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }} 
+              animate={{ opacity: 1, scale: 1, y: 0 }} 
+              exit={{ opacity: 0, scale: 0.9, y: 20 }} 
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[360px] bg-white rounded-[32px] p-6 z-40 shadow-2xl border border-sage/10"
+            >
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-black text-brown mb-2">姿を変える</h3>
+                <p className="text-xs text-brown/60 font-bold">新しい自分に着替えましょう</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                {(Object.keys(ANIMAL_DATA) as AnimalType[]).map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => handleAnimalChange(type)}
+                    disabled={isUpdating}
+                    className={`relative p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
+                      user.animal === type 
+                        ? "border-sage bg-sage/5" 
+                        : "border-transparent bg-brown/5 hover:bg-brown/10"
+                    }`}
+                  >
+                    <div className="w-16 h-16 rounded-full overflow-hidden bg-white shadow-sm">
+                      <img 
+                        src={ANIMAL_DATA[type].iconUrl} 
+                        alt={ANIMAL_DATA[type].name} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <span className={`text-sm font-bold ${user.animal === type ? "text-sage" : "text-brown"}`}>
+                      {ANIMAL_DATA[type].name}
+                    </span>
+                    {user.animal === type && (
+                      <div className="absolute top-2 right-2 w-4 h-4 bg-sage rounded-full flex items-center justify-center">
+                        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-white text-[10px]">✓</motion.div>
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              <button 
+                onClick={() => setIsAnimalModalOpen(false)}
+                className="w-full mt-6 py-3 rounded-xl text-brown/40 font-bold hover:bg-brown/5 transition-colors text-sm"
+              >
+                キャンセル
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
