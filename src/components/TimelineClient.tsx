@@ -215,7 +215,7 @@ export default function TimelineClient({
                     animate={{ opacity: 1 }} 
                     exit={{ opacity: 0 }} 
                     onClick={() => setIsModalOpen(false)} 
-                    className="fixed inset-0 z-30 flex justify-center"
+                    className="fixed inset-0 z-[70] flex justify-center"
                   >
                     <div className="w-full max-w-[430px] h-full bg-brown/20 backdrop-blur-sm" />
                   </motion.div>
@@ -226,7 +226,7 @@ export default function TimelineClient({
                     animate={{ y: 0 }} 
                     exit={{ y: "100%" }} 
                     transition={{ type: "spring", damping: 25, stiffness: 200 }} 
-                    className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/95 backdrop-blur-xl rounded-t-[40px] p-8 pb-12 z-40 shadow-2xl border-t border-white/50"
+                    className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/95 backdrop-blur-xl rounded-t-[40px] p-8 pb-12 z-[80] shadow-2xl border-t border-white/50"
                   >
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-lg font-black text-brown">{postingUI.modalTitle}</h2>
