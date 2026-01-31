@@ -205,7 +205,7 @@ export default function TimelineClient({
           ))}
         </div>
 
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/90 backdrop-blur-md border-t border-white/60 pt-3 pb-8 z-20 shadow-[0_-5px_20px_rgba(178,128,94,0.1)]">
+        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/90 backdrop-blur-md border-t border-white/60 pt-3 pb-8 z-50 shadow-[0_-5px_20px_rgba(178,128,94,0.1)]">
             <div className="grid grid-cols-5 w-full px-2">
                 <button 
                   onClick={() => {
