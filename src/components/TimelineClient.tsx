@@ -152,52 +152,54 @@ export default function TimelineClient({
         </header>
 
         <div className="flex flex-col gap-4 p-4">
-          {posts.map((post: any) => (
-            post.isSystem ? (
-              <div key={post.id} className="bg-white/90 backdrop-blur-md rounded-2xl p-4 border border-sage/20 shadow-sm flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-sage/10 flex items-center justify-center text-sage"><Megaphone size={16} /></div>
-                <p className="text-xs text-sage font-bold leading-relaxed">{post.content}</p>
-              </div>
-                    ) : (
-                      <div key={post.id} className="bg-white/80 backdrop-blur-md rounded-3xl p-4 shadow-sm border border-white/60 transition-all hover:shadow-md hover:border-sage/20">
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                            {ANIMAL_DATA[post.animalType as AnimalType] ? (
-                              <img 
-                                src={ANIMAL_DATA[post.animalType as AnimalType].iconUrl} 
-                                alt={post.animalType}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <span className="text-xl">🐾</span>
-                            )}
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] bg-sage/10 text-sage px-2 py-0.5 rounded-full font-bold border border-sage/10">{post.title}</span>
-                            </div>
-                            <h3 className="font-bold text-brown text-sm">{post.nickname}</h3>
-                          </div>
-                        </div>
-                        <p className="text-brown/90 leading-relaxed mb-3 text-sm font-medium">{post.translatedContent}</p>
-                        <div className="flex gap-6 items-center border-t border-brown/5 pt-3">
-                  {["tail", "groom", "stretch"].map((type) => (
-                      <button 
-                        key={type}
-                        onClick={() => handleToggleReaction(post.id, type as any)}
-                        className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions[type].active ? "text-mustard font-bold drop-shadow-[0_0_8px_rgba(231,169,80,0.5)]" : "text-brown/40 hover:text-mustard"}`}
-                      >
-                        {type === "tail" && <Heart size={18} fill={post.reactions[type].active ? "currentColor" : "none"} />}
-                        {type === "groom" && <Sparkles size={18} />}
-                        {type === "stretch" && <Coffee size={18} />}
-                        <span className="text-[10px] font-medium uppercase tracking-wider">
-                            {type === "tail" ? "しっぽ" : type === "groom" ? "毛づくろい" : "のび"}
-                        </span>
-                      </button>
-                  ))}
+          {/* システムメッセージ（常に最上部） */}
+          {posts.filter((p: any) => p.isSystem).map((post: any) => (
+            <div key={post.id} className="bg-white/90 backdrop-blur-md rounded-2xl p-4 border border-sage/20 shadow-sm flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-sage/10 flex items-center justify-center text-sage"><Megaphone size={16} /></div>
+              <p className="text-xs text-sage font-bold leading-relaxed">{post.content}</p>
+            </div>
+          ))}
+
+          {/* ユーザー投稿 */}
+          {posts.filter((p: any) => !p.isSystem).map((post: any) => (
+            <div key={post.id} className="bg-white/80 backdrop-blur-md rounded-3xl p-4 shadow-sm border border-white/60 transition-all hover:shadow-md hover:border-sage/20">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-full bg-sage/10 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+                  {ANIMAL_DATA[post.animalType as AnimalType] ? (
+                    <img 
+                      src={ANIMAL_DATA[post.animalType as AnimalType].iconUrl} 
+                      alt={post.animalType}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-xl">🐾</span>
+                  )}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] bg-sage/10 text-sage px-2 py-0.5 rounded-full font-bold border border-sage/10">{post.title}</span>
+                  </div>
+                  <h3 className="font-bold text-brown text-sm">{post.nickname}</h3>
                 </div>
               </div>
-            )
+              <p className="text-brown/90 leading-relaxed mb-3 text-sm font-medium">{post.translatedContent}</p>
+              <div className="flex gap-6 items-center border-t border-brown/5 pt-3">
+                {["tail", "groom", "stretch"].map((type) => (
+                    <button 
+                      key={type}
+                      onClick={() => handleToggleReaction(post.id, type as any)}
+                      className={`flex items-center gap-1.5 transition-all active:scale-110 ${post.reactions[type].active ? "text-mustard font-bold drop-shadow-[0_0_8px_rgba(231,169,80,0.5)]" : "text-brown/40 hover:text-mustard"}`}
+                    >
+                      {type === "tail" && <Heart size={18} fill={post.reactions[type].active ? "currentColor" : "none"} />}
+                      {type === "groom" && <Sparkles size={18} />}
+                      {type === "stretch" && <Coffee size={18} />}
+                      <span className="text-[10px] font-medium uppercase tracking-wider">
+                          {type === "tail" ? "しっぽ" : type === "groom" ? "毛づくろい" : "のび"}
+                      </span>
+                    </button>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
 
