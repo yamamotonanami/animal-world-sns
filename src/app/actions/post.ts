@@ -86,7 +86,9 @@ export async function createPost(content: string, translatedContent: string, spa
     }
   };
 
-  if (spaceType === 'forest' && (user.forest_post_count || 0) + 1 === 1) await checkAndAwardTitle('first-step');
+  const townPostCount = (user.post_count || 0) - (user.forest_post_count || 0) - (user.lake_post_count || 0);
+  
+  if (spaceType === 'town' && townPostCount + 1 === 1) await checkAndAwardTitle('first-step');
   if (spaceType === 'lake' && (user.lake_post_count || 0) + 1 === 1) await checkAndAwardTitle('lake-visitor');
   if (spaceType === 'forest' && (user.forest_post_count || 0) + 1 === 10) await checkAndAwardTitle('forest-guardian');
 
@@ -144,4 +146,42 @@ export async function toggleReaction(postId: string, reactionType: string) {
 
   revalidatePath('/profile')
   return { active, newlyUnlocked };
+}
+
+/**
+ * 自分の投稿履歴を取得する
+ */
+export async function fetchUserPosts() {
+  const { userId } = await auth()
+  if (!userId) throw new Error('Unauthorized')
+
+  const supabase = createServiceRoleClient()
+  
+  // ユーザーID特定
+  const { data: user } = await supabase.from('users').select('id').eq('clerk_id', userId).single()
+  if (!user) return []
+
+  // 投稿取得（リアクション数も集計したいが、簡易的に全件取得してJSでやるか、countを使う）
+  // Supabaseでrelation countを取得するのは少し面倒なので、一旦取得してから加工
+  const { data: posts } = await supabase
+    .from('posts')
+    .select(`
+      *,
+      reactions(type)
+    `)
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+
+  return posts?.map(post => ({
+    id: post.id,
+    content: post.translated_content,
+    originalContent: post.original_content,
+    createdAt: post.created_at,
+    spaceType: post.space_type,
+    reactionCounts: {
+      tail: post.reactions.filter((r: any) => r.type === 'tail').length,
+      groom: post.reactions.filter((r: any) => r.type === 'groom').length,
+      stretch: post.reactions.filter((r: any) => r.type === 'stretch').length,
+    }
+  })) || []
 }

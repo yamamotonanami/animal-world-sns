@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, Award, Settings, LogOut, RefreshCw, X, PawPrint, Map } from "lucide-react";
+import { ChevronLeft, Award, Settings, LogOut, RefreshCw, X, PawPrint, Map, Heart, Sparkles, Coffee } from "lucide-react";
 import { TITLES } from "@/lib/mock-data";
 import { ANIMAL_DATA, AnimalType, AREAS_CONFIG } from "@/lib/constants";
 import { UserData } from "@/lib/titles";
 import { updateUserTitle } from "@/app/actions/user";
+import { fetchUserPosts } from "@/app/actions/post";
 import { useClerk } from "@clerk/nextjs";
 
 export default function ProfileClient({ initialUser }: { initialUser: UserData }) {
@@ -16,8 +17,21 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
   const [user, setUser] = useState<UserData>(initialUser);
   const [activeTab, setActiveTab] = useState<"titles" | "stats">("titles");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [userPosts, setUserPosts] = useState<any[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(false);
 
   const animalInfo = ANIMAL_DATA[user.animal as AnimalType] || ANIMAL_DATA.dog;
+
+  useEffect(() => {
+    if (activeTab === "stats" && userPosts.length === 0) {
+      setLoadingPosts(true);
+      fetchUserPosts().then(posts => {
+        setUserPosts(posts);
+      }).finally(() => {
+        setLoadingPosts(false);
+      });
+    }
+  }, [activeTab]);
 
   const handleTitleSelect = async (titleName: string) => {
     if (user.title === titleName || isUpdating) return;
@@ -71,19 +85,19 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
               {user.title}
             </div>
             <h2 className="text-2xl font-bold">{user.name}</h2>
-            <p className="text-sm text-zinc-400">森の「{animalInfo.name}」さん</p>
+            <p className="text-sm text-brown/60 font-medium">森の「{animalInfo.name}」さん</p>
           </div>
         </div>
 
         <div className="space-y-4">
           <div className="flex p-1 bg-sage/5 rounded-2xl">
-            <button onClick={() => setActiveTab("titles")} className={`flex-1 py-3 text-sm font-bold rounded-xl ${activeTab === "titles" ? "bg-white text-sage shadow-sm" : "text-zinc-400"}`}>称号</button>
-            <button onClick={() => setActiveTab("stats")} className={`flex-1 py-3 text-sm font-bold rounded-xl ${activeTab === "stats" ? "bg-white text-sage shadow-sm" : "text-zinc-400"}`}>記録</button>
+            <button onClick={() => setActiveTab("titles")} className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${activeTab === "titles" ? "bg-white text-sage shadow-sm" : "text-brown/40 hover:text-brown/60"}`}>称号</button>
+            <button onClick={() => setActiveTab("stats")} className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${activeTab === "stats" ? "bg-white text-sage shadow-sm" : "text-brown/40 hover:text-brown/60"}`}>記録</button>
           </div>
 
           {activeTab === "titles" ? (
             <div className="grid grid-cols-1 gap-3">
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">初期の称号</p>
+              <p className="text-[10px] font-bold text-brown/40 uppercase tracking-widest px-2">初期の称号</p>
               {TITLES.initial.map((titleName) => (
                 <button
                   key={titleName}
@@ -92,7 +106,7 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
                   className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
                     user.title === titleName
                       ? "bg-sage/5 border-sage text-sage"
-                      : "bg-white border-sage/5 text-zinc-500 hover:border-sage/20"
+                      : "bg-white border-sage/5 text-brown/60 hover:border-sage/20"
                   }`}
                 >
                   <span className="text-sm font-medium">{titleName}</span>
@@ -100,7 +114,7 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
                 </button>
               ))}
 
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2 mt-4">解放された称号</p>
+              <p className="text-[10px] font-bold text-brown/40 uppercase tracking-widest px-2 mt-4">解放された称号</p>
               {TITLES.unlocked.map((t) => {
                 // 修正：プログラム内のID (t.id) と、DBから送られてきたコードを比較する
                 const isUnlocked = user.unlockedTitles?.includes(t.id);
@@ -113,31 +127,81 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
                       isUnlocked 
                         ? user.title === t.name
                           ? "bg-sage/5 border-sage text-sage"
-                          : "bg-white border-sage/5 text-zinc-500 hover:border-sage/20"
-                        : "bg-zinc-50 border-zinc-100 opacity-50 cursor-not-allowed"
+                          : "bg-white border-sage/5 text-brown/60 hover:border-sage/20"
+                        : "bg-white/50 border-brown/5 opacity-50 cursor-not-allowed"
                     }`}
                   >
                     <div className="flex flex-col">
                       <span className="text-sm font-medium">{t.name}</span>
-                      {!isUnlocked && <span className="text-[10px] text-zinc-400">{t.condition}</span>}
+                      {!isUnlocked && <span className="text-[10px] text-brown/40">{t.condition}</span>}
                     </div>
                     {isUnlocked ? (
                       user.title === t.name ? <div className="w-2 h-2 rounded-full bg-sage" /> : <Award size={16} className="text-mustard" />
                     ) : (
-                      <Award size={16} className="opacity-10" />
+                      <Award size={16} className="opacity-10 text-brown" />
                     )}
                   </button>
                 );
               })}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
-              <StatCard label="総投稿数" value={user.postCount} />
-              <StatCard label="森の歩み" value={user.forestPostCount} />
-              <StatCard label="湖の思い出" value={user.lakePostCount} />
-              <StatCard label="しっぽ" value={user.reactionTailCount} />
-              <StatCard label="毛づくろい" value={user.reactionGroomCount} />
-              <StatCard label="のび" value={user.reactionStretchCount} />
+            <div className="space-y-4">
+              {loadingPosts ? (
+                <div className="text-center py-12">
+                  <div className="w-8 h-8 border-4 border-sage/20 border-t-sage rounded-full animate-spin mx-auto mb-2" />
+                  <p className="text-xs text-brown/40 font-bold">思い出を読み込んでいます...</p>
+                </div>
+              ) : userPosts.length === 0 ? (
+                <div className="text-center py-12 space-y-2">
+                  <div className="text-4xl opacity-50">🍃</div>
+                  <p className="text-xs text-brown/40 font-bold">まだ記録がありません。<br/>何かをつぶやいてみましょう。</p>
+                </div>
+              ) : (
+                userPosts.map(post => (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    key={post.id} 
+                    className="bg-white/80 backdrop-blur-sm rounded-[24px] p-5 border border-white/60 shadow-sm space-y-3"
+                  >
+                    <div className="flex justify-between items-start">
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${
+                        post.spaceType === 'town' ? 'bg-[#E7A950]/10 text-[#E7A950] border-[#E7A950]/20' : 
+                        post.spaceType === 'forest' ? 'bg-[#9BC385]/10 text-[#9BC385] border-[#9BC385]/20' : 
+                        'bg-blue-400/10 text-blue-400 border-blue-400/20'
+                      }`}>
+                        {post.spaceType === 'town' ? '街' : post.spaceType === 'forest' ? '森' : '湖'}
+                      </span>
+                      <span className="text-[10px] text-brown/40 font-bold">
+                        {new Date(post.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    
+                    <p className="text-sm text-brown font-medium leading-relaxed">{post.content}</p>
+                    
+                    <div className="bg-brown/5 rounded-xl p-3 border border-brown/5">
+                      <p className="text-[10px] text-brown/60 italic leading-relaxed">
+                        "{post.originalContent}"
+                      </p>
+                    </div>
+                    
+                    <div className="flex gap-4 pt-2 border-t border-brown/5">
+                      <div className="flex items-center gap-1.5 text-brown/40 text-xs font-bold">
+                        <Heart size={14} className={post.reactionCounts.tail > 0 ? "text-[#E7A950]" : ""} /> 
+                        {post.reactionCounts.tail}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-brown/40 text-xs font-bold">
+                        <Sparkles size={14} className={post.reactionCounts.groom > 0 ? "text-[#E7A950]" : ""} /> 
+                        {post.reactionCounts.groom}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-brown/40 text-xs font-bold">
+                        <Coffee size={14} className={post.reactionCounts.stretch > 0 ? "text-[#E7A950]" : ""} /> 
+                        {post.reactionCounts.stretch}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))
+              )}
             </div>
           )}
         </div>
@@ -182,15 +246,6 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
             </button>
         </div>
       </nav>
-    </div>
-  );
-}
-
-function StatCard({ label, value }: { label: string, value: number }) {
-  return (
-    <div className="flex flex-col p-4 bg-white rounded-2xl border border-sage/5 shadow-sm">
-      <span className="text-xl font-bold text-sage">{value}</span>
-      <span className="text-[9px] text-zinc-400 uppercase tracking-wider">{label}</span>
     </div>
   );
 }
