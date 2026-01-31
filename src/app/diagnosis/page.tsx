@@ -192,7 +192,7 @@ export default function DiagnosisPage() {
                     <div className="w-12 h-12 rounded-2xl bg-[#9BC385]/10 flex items-center justify-center text-[#9BC385]">
                       <Coffee size={20} />
                     </div>
-                    <span className="text-[10px] font-bold text-[#B2805E]/60">質問</span>
+                    <span className="text-[10px] font-black text-[#B2805E]">質問</span>
                   </div>
                   {/* Arrow */}
                   <div className="w-6 h-[2px] bg-[#B2805E]/10 rounded-full" />
@@ -202,7 +202,7 @@ export default function DiagnosisPage() {
                     <div className="w-12 h-12 rounded-2xl bg-[#E7A950]/10 flex items-center justify-center text-[#E7A950]">
                       <Sparkles size={20} />
                     </div>
-                    <span className="text-[10px] font-bold text-[#B2805E]/60">診断</span>
+                    <span className="text-[10px] font-black text-[#B2805E]">診断</span>
                   </div>
                   {/* Arrow */}
                   <div className="w-6 h-[2px] bg-[#B2805E]/10 rounded-full" />
@@ -212,7 +212,7 @@ export default function DiagnosisPage() {
                     <div className="w-12 h-12 rounded-2xl bg-[#B2805E]/10 flex items-center justify-center text-[#B2805E]">
                       <PenTool size={20} />
                     </div>
-                    <span className="text-[10px] font-bold text-[#B2805E]/60">登録</span>
+                    <span className="text-[10px] font-black text-[#B2805E]">登録</span>
                   </div>
                 </div>
 
@@ -284,7 +284,7 @@ export default function DiagnosisPage() {
             <div className="space-y-6">
               <div className="space-y-1">
                 <p className="text-[10px] font-black text-[#E7A950] uppercase tracking-widest">Diagnosis Result</p>
-                <h2 className="text-xl font-black text-[#B2805E] italic underline decoration-[#E7A950]/30 decoration-4 underline-offset-4">Identity Identified</h2>
+                <h2 className="text-xl font-black text-[#B2805E] italic underline decoration-[#E7A950]/30 decoration-4 underline-offset-4">あなたの姿が見つかりました</h2>
               </div>
               
               <div className="relative inline-block py-4">
@@ -361,10 +361,12 @@ export default function DiagnosisPage() {
             animate={{ opacity: 1, y: 0 }}
             className="relative z-10 w-full max-w-sm bg-white/80 backdrop-blur-md rounded-[32px] shadow-2xl border border-white/60 p-10 text-center space-y-8"
           >
-            <div className="space-y-2">
+            <div className="space-y-4">
               <p className="text-[10px] font-black text-[#9BC385] uppercase tracking-widest">Manual Override</p>
-              <h2 className="text-xl font-black text-[#B2805E] italic">CHOOSE IDENTITY</h2>
-              <p className="text-[#B2805E]/60 text-[10px] font-bold">あなたが一番しっくりくる姿を選んでください。</p>
+              <h2 className="text-lg font-black text-[#B2805E] leading-relaxed">
+                あなたが一番しっくりくる姿を<br />
+                選んでください
+              </h2>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -375,16 +377,16 @@ export default function DiagnosisPage() {
                     setResult(id);
                     setTimeout(() => setCurrentStep(QUESTIONS.length + 1), 300);
                   }}
-                  className={`p-6 rounded-[24px] border-2 transition-all flex flex-col items-center gap-2 ${
+                  className={`p-6 rounded-[24px] border-2 transition-all flex flex-col items-center gap-3 ${
                     result === id 
                       ? "border-[#9BC385] bg-[#9BC385]/5 shadow-inner" 
                       : "border-white bg-white/50 hover:border-[#9BC385]/20 shadow-sm"
                   }`}
                 >
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden drop-shadow-lg">
+                  <div className="w-24 h-24 rounded-2xl overflow-hidden drop-shadow-lg">
                     <img src={animal.iconUrl} alt={animal.name} className="w-full h-full object-cover" />
                   </div>
-                  <span className="font-bold text-[11px] text-[#B2805E]/80 uppercase tracking-tighter">{animal.name}</span>
+                  <span className="font-bold text-[13px] text-[#B2805E] uppercase tracking-tighter">{animal.name}</span>
                 </button>
               ))}
             </div>
