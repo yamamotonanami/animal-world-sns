@@ -423,10 +423,9 @@ export default function DiagnosisPage() {
                 </div>
                 
                 <div className="flex flex-col gap-1">
-                  <div className="flex justify-between px-2 text-[10px] font-black text-[#B2805E]/30 uppercase tracking-widest">
-                    <span>{selectedTitle}</span>
-                    <span>{userName.length} / 6</span>
-                  </div>
+                <div className="flex justify-end px-2 text-[10px] font-black text-[#B2805E]/30 uppercase tracking-widest">
+                  <span>{userName.length} / 6</span>
+                </div>
                   <AnimatePresence>
                     {nameError && (
                       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] text-red-400 font-bold uppercase">{nameError}</motion.p>
@@ -435,8 +434,8 @@ export default function DiagnosisPage() {
                 </div>
               </div>
               
-              <p className="text-[9px] text-[#B2805E]/60 leading-relaxed font-medium bg-white/50 p-4 rounded-xl border border-white">
-                ※ひらがな・カタカナ6文字以内で入力してください。この名前は市民名簿に登録され、動物たちの世界での公式な呼び名となります。
+              <p className="text-[10px] text-[#B2805E] font-bold leading-relaxed bg-white/50 p-4 rounded-xl border border-white">
+                ※ひらがな・カタカナ6文字以内で入力してください。<br/>この名前はあとから変更することができません。
               </p>
 
               <button
@@ -586,7 +585,7 @@ export default function DiagnosisPage() {
 
               <div className="space-y-2">
                 <p className="text-[#B2805E]/80 leading-relaxed font-medium">
-                  ようこそ、穏やかな世界へ。<br />
+                  ようこそ、動物たちの世界へ。<br />
                   まずは賑やかな「街」から、<br />
                   あなたの新しい生活を始めましょう。
                 </p>
