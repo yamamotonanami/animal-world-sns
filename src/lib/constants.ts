@@ -80,7 +80,7 @@ export type AreaId = keyof typeof AREAS_CONFIG;
 
 // プロンプトで使用するエリアごとの情景キーワード
 export const AREA_PROMPT_CONTEXTS = {
-  town: "石畳の感触、広場の賑わい、遠くの鐘の音",
-  forest: "木漏れ日の揺れ、湿った土の匂い、葉のささやき",
-  lake: "静かな水面の波紋、澄んだ空気、水面に映る光"
+  town: "活気ある喧騒、石畳の硬さ、おいしそうな匂い",
+  forest: "湿った土の匂い、木々のざわめき、木漏れ日の温かさ",
+  lake: "水の匂い、静寂、ひんやりとした空気"
 } as const;
