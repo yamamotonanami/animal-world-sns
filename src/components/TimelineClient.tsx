@@ -141,12 +141,8 @@ export default function TimelineClient({
       <div className="fixed inset-0 z-0 w-full max-w-[430px] left-1/2 -translate-x-1/2 pointer-events-none bg-sage/10 mix-blend-overlay" />
 
       <div className="relative z-10 pt-[100px]">
-        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20 bg-white/80 backdrop-blur-md border-b border-white/60 px-4 py-3 shadow-sm flex items-center">
-          <div className="w-full">
-            <div className="flex justify-start items-center">
-              <img src="/logo/title_logo.png" alt="Animal World" className="h-16 w-auto object-contain drop-shadow-sm" />
-            </div>
-          </div>
+        <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20 bg-white/80 backdrop-blur-md border-b border-white/60 px-6 py-2 shadow-sm flex items-center justify-center">
+          <img src="/logo/title_logo.png" alt="Animal World" className="h-16 w-auto object-contain drop-shadow-sm" />
         </header>
 
         <div className="flex flex-col gap-4 p-4">

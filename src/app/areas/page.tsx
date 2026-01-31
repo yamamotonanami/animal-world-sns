@@ -10,14 +10,14 @@ export default function AreasPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-offwhite pb-32 text-zinc-800">
+    <div className="min-h-screen bg-offwhite pb-32 text-brown">
       {/* ヘッダー */}
-      <header className="sticky top-0 z-10 bg-white border-b border-sage/10 px-6 py-4">
-        <h1 className="text-lg font-bold">エリアを選択</h1>
-        <p className="text-xs text-zinc-400">どこへ遊びに行きますか？</p>
+      <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20 bg-white/80 backdrop-blur-md border-b border-white/60 px-6 py-4 shadow-sm">
+        <h1 className="text-lg font-black text-brown">エリアを選択</h1>
+        <p className="text-xs text-brown/60 font-bold">どこへ遊びに行きますか？</p>
       </header>
 
-      <div className="p-6 space-y-4">
+      <div className="pt-24 p-6 space-y-4">
         {Object.values(AREAS_CONFIG).map((area) => (
           <motion.button
             key={area.id}

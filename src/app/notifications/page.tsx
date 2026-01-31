@@ -110,17 +110,17 @@ export default function NotificationsPage() {
   return (
     <div className="min-h-screen bg-offwhite pb-24">
       {/* ヘッダー */}
-      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-sage/10 px-6 py-4 flex items-center gap-4">
+      <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20 bg-white/80 backdrop-blur-md border-b border-white/60 px-6 py-4 shadow-sm flex items-center gap-4">
         <button 
           onClick={() => router.back()}
-          className="p-2 hover:bg-sage/5 rounded-full transition-colors text-sage"
+          className="p-2 hover:bg-sage/5 rounded-full transition-colors text-brown/60 hover:text-brown"
         >
           <ChevronLeft size={24} />
         </button>
-        <h1 className="text-lg font-bold text-zinc-800">通知</h1>
+        <h1 className="text-lg font-black text-brown">通知</h1>
       </header>
 
-      <div className="p-4 space-y-3">
+      <div className="pt-24 p-4 space-y-3">
         {notifications.map((notification) => (
           <motion.div
             key={notification.id}

@@ -41,22 +41,22 @@ export default function ProfileClient({ initialUser }: { initialUser: UserData }
   };
 
   return (
-    <div className="min-h-screen bg-offwhite pb-24 text-zinc-800">
-      <header className="sticky top-0 z-10 bg-white border-b border-sage/10 px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-offwhite pb-24 text-brown">
+      <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-20 bg-white/80 backdrop-blur-md border-b border-white/60 px-6 py-4 shadow-sm flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <button onClick={() => router.push("/")} className="p-2 text-sage"><ChevronLeft size={24} /></button>
-          <h1 className="text-lg font-bold">プロフィール</h1>
+          <button onClick={() => router.push("/")} className="p-2 text-brown/60 hover:text-brown"><ChevronLeft size={24} /></button>
+          <h1 className="text-lg font-black text-brown">プロフィール</h1>
         </div>
         <button 
           onClick={handleSignOut}
-          className="p-2 text-zinc-400 hover:text-red-400 transition-colors"
+          className="p-2 text-brown/40 hover:text-red-400 transition-colors"
           title="ログアウト"
         >
           <LogOut size={20} />
         </button>
       </header>
 
-      <div className="p-6 space-y-8">
+      <div className="pt-24 p-6 space-y-8">
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="w-32 h-32 rounded-full bg-sage/5 border-2 border-sage/20 flex items-center justify-center shadow-inner overflow-hidden">
             <img 
