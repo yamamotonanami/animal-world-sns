@@ -50,17 +50,19 @@ export default function TimelineClient({
   const [inputValue, setInputValue] = useState("");
   const [isTranslating, setIsTranslating] = useState(false);
   const [translatedResult, setTranslatedResult] = useState("");
+  const [translationError, setTranslationError] = useState("");
   const [newTitles, setNewTitles] = useState<{ id: string, name: string }[]>([]);
 
   const handleTranslate = async () => {
     if (!inputValue.trim()) return;
     setIsTranslating(true);
+    setTranslationError("");
     try {
       const result = await translatePostContent(inputValue, spaceType);
       setTranslatedResult(result);
     } catch (e) {
       console.error("Translation error:", e);
-      alert("翻訳に失敗しました。時間をおいて再度お試しください。");
+      setTranslationError("翻訳に失敗しました。時間をおいて再度お試しください。");
     } finally {
       setIsTranslating(false);
     }
@@ -281,6 +283,12 @@ export default function TimelineClient({
                               placeholder={postingUI.inputPlaceholder} 
                               className="w-full h-32 p-4 rounded-2xl bg-white border border-brown/10 focus:border-sage focus:ring-2 focus:ring-sage/20 resize-none text-brown placeholder:text-brown/30 font-medium" 
                             />
+                            {translationError && (
+                              <p className="text-red-500 text-sm font-bold bg-red-50 p-3 rounded-lg flex items-center gap-2">
+                                <X size={16} />
+                                {translationError}
+                              </p>
+                            )}
                             <button onClick={handleTranslate} disabled={!inputValue.trim() || isTranslating} className={`h-14 rounded-full font-bold transition-all ${isTranslating ? "bg-brown/10 text-brown/40" : "bg-sage text-white shadow-lg shadow-sage/30 hover:scale-[1.02] active:scale-95"}`}>{isTranslating ? postingUI.translatingText : "翻訳する"}</button>
                         </div>
                     ) : (

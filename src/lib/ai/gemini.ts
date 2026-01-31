@@ -18,7 +18,7 @@ export async function translateWithAI(prompt: string) {
 
   try {
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-1.5-flash",
       generationConfig: {
         maxOutputTokens: 100,
         temperature: 0.8, // ランダム性を少し高めに
